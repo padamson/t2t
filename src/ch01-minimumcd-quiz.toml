@@ -1,0 +1,59 @@
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "According to the MinimumCD manifesto, how often must work integrate to trunk at minimum?"
+prompt.distractors = [
+    "Weekly",
+    "Every sprint",
+    "Before each release",
+]
+answer.answer = "Daily"
+context = "The MinimumCD manifesto requires that work integrates to trunk at minimum daily. This is a hard requirement for Continuous Integration, not a suggestion."
+id = "c1q1-integration-frequency"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "In MinimumCD, what happens when the main pipeline is red?"
+prompt.distractors = [
+    "The team files a bug and continues working on new features",
+    "Only the developer who broke it stops working on features",
+    "The pipeline failure is logged and addressed in the next sprint",
+]
+answer.answer = "All feature work stops until the pipeline is green"
+context = "Both the CI and CD definitions require that all feature work stops when the build or pipeline is red. This is not optional. A red pipeline means the team's top priority is restoring it."
+id = "c1q2-red-pipeline"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "According to the MinimumCD greenfield guide, what should be the FIRST thing you build in a new project?"
+prompt.distractors = [
+    "The data model",
+    "A working prototype with core features",
+    "The test suite",
+]
+answer.answer = "The delivery pipeline"
+context = "The greenfield guide calls the delivery pipeline 'feature zero.' You deploy a hello-world application all the way to production through the pipeline before writing any application code. This is the foundation everything else builds on."
+id = "c1q3-feature-zero"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "What does the MinimumCD manifesto mean by 'immutable artifacts'?"
+prompt.distractors = [
+    "Artifacts are stored in a read-only repository",
+    "Artifacts are signed with a cryptographic hash",
+    "Artifacts are backed up before each deployment",
+]
+answer.answer = "No human changes are made to artifacts after commit"
+context = "Immutable artifacts mean the pipeline builds the artifact once, and no one modifies it afterward. The same artifact that passes tests in staging is the one deployed to production. No manual patches, no environment-specific rebuilds."
+id = "c1q4-immutable-artifacts"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "MinimumCD defines Trunk-Based Development as:"
+prompt.distractors = [
+    "A Git workflow where feature branches are merged via pull requests",
+    "A practice where the main branch is always deployable",
+    "A strategy for managing multiple release branches",
+]
+answer.answer = "The branching pattern required to meet the definition of CI: branches from trunk are allowed, but they must be short-lived and re-integrate to trunk"
+context = "The manifesto defines TBD specifically as the branching pattern required for CI. Long-lived feature branches violate this definition."
+id = "c1q5-tbd-definition"

@@ -1,0 +1,10 @@
+# Build output
+build/
+
+# mdbook-quiz writes assets into src/quiz/ on every build,
+# which triggers mdbook serve rebuild loops
+src/quiz/quiz-embed.iife.js
+src/quiz/style.css
+
+# OS files
+.DS_Store

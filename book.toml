@@ -1,0 +1,23 @@
+[book]
+title = "Trunk to Table"
+authors = ["Paul Adamson"]
+language = "en"
+src = "src"
+
+[build]
+build-dir = "build"
+
+[preprocessor.quiz]
+
+[preprocessor.admonish]
+command = "mdbook-admonish"
+assets_version = "3.1.0" # do not edit: managed by `mdbook-admonish install`
+
+[[preprocessor.admonish.custom]]
+directive = "reference"
+icon = "./images/book-open-variant.svg"
+color = "#e8a317"
+title = "Reading Assignment"
+
+[output.html]
+additional-css = ["./mdbook-admonish.css"]

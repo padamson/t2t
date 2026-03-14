@@ -1,0 +1,47 @@
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "In the ACD workflow, who owns the intent for every change?"
+prompt.distractors = [
+    "The AI agent, based on codebase analysis",
+    "The pipeline, based on test results",
+    "The team lead, who assigns work to agents",
+]
+answer.answer = "A human"
+context = "ACD requires explicit, human-owned intent for every change. The human decides what to build. The agent helps figure out how."
+id = "c1q6-intent-ownership"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "How are intent and architecture represented in ACD?"
+prompt.distractors = [
+    "In a wiki or shared document outside the repo",
+    "In the developer's head, communicated verbally",
+    "In Jira tickets linked to pull requests",
+]
+answer.answer = "As versioned delivery artifacts in the repo"
+context = "ACD requires that intent and architecture are represented as delivery artifacts — versioned, machine-readable, and stored in the repo alongside the code. Not in a wiki, not in someone's head."
+id = "c1q7-delivery-artifacts"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "When the pipeline is red, what may agents do?"
+prompt.distractors = [
+    "Continue generating new features on a separate branch",
+    "Skip failing tests and deploy anyway",
+    "Nothing — all agent work pauses until a human intervenes",
+]
+answer.answer = "Only generate changes that restore pipeline health"
+context = "While the pipeline is red, agents may only generate changes restoring pipeline health. No new features until the build is green. This prevents agents from piling changes on top of a broken build."
+id = "c1q8-red-pipeline-agents"
+
+[[questions]]
+type = "MultipleChoice"
+prompt.prompt = "What enforces consistency between intent, tests, implementation, and architecture in ACD?"
+prompt.distractors = [
+    "Code review by senior developers",
+    "The AI agent's internal validation",
+    "A weekly architecture review meeting",
+]
+answer.answer = "The pipeline"
+context = "Consistency between intent, tests, implementation, and architecture is enforced by the pipeline. It's not a matter of discipline or review — the pipeline verifies it automatically on every change."
+id = "c1q9-consistency-enforcement"
