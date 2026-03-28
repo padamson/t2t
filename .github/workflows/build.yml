@@ -38,11 +38,13 @@ jobs:
           restore-keys: |
             cargo-${{ runner.os }}-
 
-      - name: Install mdbook and backends
+      - name: Install mdbook
+        run: command -v mdbook || cargo install mdbook
+
+      - name: Install forked backends
         run: |
-          command -v mdbook || cargo install mdbook
-          command -v mdbook-typst-pdf || cargo install --git https://github.com/padamson/mdbook-typst-pdf
-          command -v mdbook-admonish || cargo install --git https://github.com/padamson/mdbook-admonish --branch feat/mdbook-0.5-compat
+          cargo install --git https://github.com/padamson/mdbook-typst-pdf --force
+          cargo install --git https://github.com/padamson/mdbook-admonish --branch feat/mdbook-0.5-compat --force
           mdbook-admonish install
 
       - name: Install mdbook-quiz (requires pnpm for JS assets)
