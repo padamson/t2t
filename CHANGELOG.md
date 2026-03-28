@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 Version scheme: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for small edits and fixes. `v1.0.0` marks the complete first edition. Each tagged version triggers a GitHub Release with a downloadable PDF.
 
+## [v0.1.2] - 2026-03-28
+
+### Changed
+- Switch mdbook-typst-pdf from fork to upstream v0.7.3 (admonish support merged)
+- Re-enable CI caching for mdbook-typst-pdf
+- First dogfood blocker fully resolved: found gap, forked, fixed, contributed, merged, released
+
 ## [v0.1.1] - 2026-03-27
 
 ### Fixed
@@ -33,5 +40,6 @@ Version scheme: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for
 - Structured logging (tracing) and error handling (thiserror) added to chapter progression
 - Dogfood blocker tracking for third-party tools (mdbook-admonish, mdbook-quiz)
 
+[v0.1.2]: https://github.com/padamson/t2t/compare/v0.1.1...v0.1.2
 [v0.1.1]: https://github.com/padamson/t2t/compare/v0.1.0...v0.1.1
 [v0.1.0]: https://github.com/padamson/t2t/releases/tag/v0.1.0

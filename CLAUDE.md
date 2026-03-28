@@ -20,7 +20,7 @@ This is the manuscript repo for *Trunk to Table: Building a Full-Stack Rust Appl
 
 All Rust-based:
 - `mdbook` — Book build system (`mdbook build`, `mdbook serve --open`, `mdbook test`)
-- `mdbook-typst-pdf` — Print-quality PDF generation via the Typst typesetting engine — admonish blocks unstyled in PDF (tracked in `dogfood-gaps.md`)
+- `mdbook-typst-pdf` — Print-quality PDF generation via the Typst typesetting engine (v0.7.3+, includes admonish support)
 - `mdbook-admonish` — Admonitions plugin (TIP, NOTE, WARNING) — using fork until upstream merges PR #235
 - `mdbook-quiz` — Interactive quizzes — using fork until upstream merges PR #62
 - Future: callout preprocessor, EPUB backend

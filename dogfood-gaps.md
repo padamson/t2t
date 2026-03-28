@@ -26,8 +26,7 @@ Tracked gaps in tools used by the book and CuisineIQ. Created and updated by `/b
 - **Category:** Third-party
 - **Upstream:** KaiserY/mdbook-typst-pdf#11
 - **Fork:** padamson/mdbook-typst-pdf
-- **Upstream PR:** KaiserY/mdbook-typst-pdf#12
+- **Upstream PR:** KaiserY/mdbook-typst-pdf#12 (MERGED)
 - **Tracking issue:** padamson/t2t#3
 - **Chapter:** All chapters (admonitions throughout)
-- **Status:** Using fork
-- **Workaround:** Using fork via `cargo install --git https://github.com/padamson/mdbook-typst-pdf`
+- **Status:** Resolved — merged upstream and released as v0.7.3
