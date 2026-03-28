@@ -41,7 +41,7 @@ jobs:
       - name: Install mdbook and backends
         run: |
           command -v mdbook || cargo install mdbook
-          command -v mdbook-typst-pdf || cargo install mdbook-typst-pdf
+          command -v mdbook-typst-pdf || cargo install --git https://github.com/padamson/mdbook-typst-pdf
           command -v mdbook-admonish || cargo install --git https://github.com/padamson/mdbook-admonish --branch feat/mdbook-0.5-compat
           mdbook-admonish install
 

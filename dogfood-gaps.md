@@ -21,3 +21,13 @@ Tracked gaps in tools used by the book and CuisineIQ. Created and updated by `/b
 - **Chapter:** Ch 01 (MinimumCD quiz), future chapters
 - **Status:** Using fork
 - **Workaround:** Using fork via `cargo install --git https://github.com/padamson/mdbook-quiz`
+
+## 2026-03-27 — mdbook-typst-pdf: Admonish blocks unstyled in PDF output
+- **Category:** Third-party
+- **Upstream:** KaiserY/mdbook-typst-pdf#11
+- **Fork:** padamson/mdbook-typst-pdf
+- **Upstream PR:** KaiserY/mdbook-typst-pdf#12
+- **Tracking issue:** padamson/t2t#3
+- **Chapter:** All chapters (admonitions throughout)
+- **Status:** Using fork
+- **Workaround:** Using fork via `cargo install --git https://github.com/padamson/mdbook-typst-pdf`

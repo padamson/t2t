@@ -34,6 +34,7 @@ in public repos. Book-specific context goes only in the t2t tracking issue.
 ### Third-party (fork when blocked)
 - `mdbook-admonish` -> upstream: `tommilligan/mdbook-admonish`, fork: `padamson/mdbook-admonish`
 - `mdbook-quiz` -> upstream: `cognitive-engineering-lab/mdbook-quiz`, fork: `padamson/mdbook-quiz`
+- `mdbook-typst-pdf` -> upstream: `KaiserY/mdbook-typst-pdf`, fork: `padamson/mdbook-typst-pdf`
 - Any other third-party tool -> determine upstream and fork repos from context
 
 If the tool isn't in either list, ask the user for the GitHub repo path.
