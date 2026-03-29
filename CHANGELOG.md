@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 Version scheme: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for small edits and fixes. `v1.0.0` marks the complete first edition. Each tagged version triggers a GitHub Release with a downloadable PDF.
 
+## Unreleased
+
+### Added
+- GitHub repo link in mdbook site header
+
 ## [v0.1.2] - 2026-03-28
 
 ### Changed
