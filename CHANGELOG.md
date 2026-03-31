@@ -5,9 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 Version scheme: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for small edits and fixes. `v1.0.0` marks the complete first edition. Each tagged version triggers a GitHub Release with a downloadable PDF.
 
-## Unreleased
+## [v0.1.3] - 2026-03-31
 
 ### Added
+- mdbook-quiz-pdf preprocessor: renders quizzes as styled admonish boxes in PDF output
+- Custom "quiz" admonish type with purple question-mark icon
 - GitHub repo link in mdbook site header
 
 ## [v0.1.2] - 2026-03-28
@@ -45,6 +47,7 @@ Version scheme: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for
 - Structured logging (tracing) and error handling (thiserror) added to chapter progression
 - Dogfood blocker tracking for third-party tools (mdbook-admonish, mdbook-quiz)
 
+[v0.1.3]: https://github.com/padamson/t2t/compare/v0.1.2...v0.1.3
 [v0.1.2]: https://github.com/padamson/t2t/compare/v0.1.1...v0.1.2
 [v0.1.1]: https://github.com/padamson/t2t/compare/v0.1.0...v0.1.1
 [v0.1.0]: https://github.com/padamson/t2t/releases/tag/v0.1.0

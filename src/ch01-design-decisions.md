@@ -4,11 +4,11 @@
 Make sure you've completed [Before You Begin](./ch00-before-you-begin.md), including the two reading assignments: the [MinimumCD manifesto](https://minimumcd.org) and the [Greenfield CD guide](http://localhost:1313/docs/migrate-to-cd/greenfield/). This chapter builds directly on that material.
 ```
 
-Did you actually read them? Let's find out.
+Did you actually read them? Let's find out with the following quiz.
 
 {{#quiz ./ch01-minimumcd-quiz.toml}}
 
-If any of those surprised you, go back and re-read the manifesto and greenfield guide before continuing.
+If any of those quiz answers surprised you, go back and re-read the manifesto and greenfield guide before continuing.
 
 # Design Decisions
 

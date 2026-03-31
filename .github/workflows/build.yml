@@ -42,6 +42,7 @@ jobs:
         run: |
           command -v mdbook || cargo install mdbook
           command -v mdbook-typst-pdf || cargo install mdbook-typst-pdf
+          cargo install --path tools/mdbook-quiz-pdf
 
       - name: Install forked backends
         run: |

@@ -1,6 +1,9 @@
 # Build output
 build/
 
+# Rust build artifacts for local tools
+tools/*/target/
+
 # mdbook-quiz writes assets into src/quiz/ on every build,
 # which triggers mdbook serve rebuild loops
 src/quiz/quiz-embed.iife.js

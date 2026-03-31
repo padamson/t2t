@@ -7,6 +7,10 @@ src = "src"
 [build]
 build-dir = "build"
 
+[preprocessor.quiz-pdf]
+command = "mdbook-quiz-pdf"
+before = ["quiz"]
+
 [preprocessor.quiz]
 
 [preprocessor.admonish]
@@ -18,6 +22,12 @@ directive = "reference"
 icon = "./images/book-open-variant.svg"
 color = "#e8a317"
 title = "Reading Assignment"
+
+[[preprocessor.admonish.custom]]
+directive = "quiz"
+icon = "./images/help-circle.svg"
+color = "#7c4dff"
+title = "Check Your Understanding"
 
 [output.html]
 additional-css = ["./mdbook-admonish.css"]
