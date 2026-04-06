@@ -376,8 +376,9 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 - [ ] Every commit that passes the pipeline is a deployment candidate *(Ch 2)*
 - [ ] Deployment is a routine, low-risk event *(Ch 5)*
 - [ ] Performance benchmarks run in CI (criterion); regressions block the pipeline *(Ch 11)*
+- [ ] Database backups are automated via Terraform *(Ch 2)*
 - [ ] CSP headers and rate limiting are configured *(Ch 12)*
-- [ ] Database backups are automated with tested restore process *(Ch 12)*
+- [ ] Database restore process is tested against real data *(Ch 12)*
 - [ ] Feature flags decouple deployment from release *(Ch 13)*
 - [ ] Load testing establishes baseline capacity and failure modes *(Ch 14)*
 - [ ] Observability: tracing spans and metrics support canary comparison *(Ch 14)*

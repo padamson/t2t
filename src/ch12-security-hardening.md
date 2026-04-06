@@ -5,4 +5,4 @@
 <!-- Teaches: SBOM generation -->
 <!-- Teaches: hardened container images (minimal base, non-root, multi-stage build) -->
 <!-- Teaches: secrets rotation — automating credential rotation for database and API keys without downtime -->
-<!-- Teaches: database backup & disaster recovery — automated backups via Terraform, point-in-time recovery, testing restores -->
+<!-- Teaches: database disaster recovery — test the restore process against real data (backups configured in Ch 2) -->

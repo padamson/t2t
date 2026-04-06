@@ -102,7 +102,7 @@
 <!-- ============================================================ -->
 
 <!-- The reader builds: -->
-<!-- - Terraform configs for Linode: compute instance, managed PostgreSQL, HTTPS/TLS -->
+<!-- - Terraform configs for Linode: compute instance, managed PostgreSQL, HTTPS/TLS, automated backups -->
 <!-- - Staging and production environments from the same Terraform configs -->
 <!-- - Deploy hello-world to production through the pipeline -->
 <!-- - Secrets management: GitHub Secrets for Linode API tokens, .env for local dev -->
@@ -111,7 +111,7 @@
 
 <!-- The reader learns: -->
 <!-- - Terraform basics: providers, resources, state, HCL syntax -->
-<!-- - Linode provisioning: compute instances, managed PostgreSQL, HTTPS/TLS -->
+<!-- - Linode provisioning: compute instances, managed PostgreSQL, HTTPS/TLS, automated backups -->
 <!-- - Why staging and production use the same Terraform configs (no snowflake environments) -->
 <!-- - Secrets management: environment variables, GitHub Secrets, .env in .gitignore -->
 <!-- - HTTPS/TLS from day one (production-like environments) -->
@@ -132,3 +132,4 @@
 <!--   - Rollback is tested and works -->
 <!--   - Application configuration is externalized -->
 <!--   - Artifacts are immutable -->
+<!--   - Database backups are automated via Terraform -->

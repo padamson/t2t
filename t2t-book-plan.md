@@ -567,7 +567,8 @@ Quality Gates:
 
 Security:
 - [ ] Secrets rotation is automated for database and API credentials
-- [ ] Database backups are automated with tested restore process
+- [ ] Database backups are automated via Terraform
+- [ ] Database restore process is tested against real data
 
 Production Readiness:
 - [ ] Pipeline deploys to production on Linode
@@ -690,7 +691,7 @@ With the full stack and ACD workflow in place, subsequent features move faster. 
 - **Shared grocery lists** — Teaches multi-user data modeling, authorization logic, real-time updates.
 - **Recipe creation with live preview** — Teaches relational data modeling (recipes → ingredients → quantities/units), more complex forms, and Leptos fine-grained reactivity via a recipe editor with live-rendered preview as the user types. Database practices expand: query performance with joins, index strategy for relational queries.
 - **Recipe-to-grocery integration** — Teaches domain logic that spans multiple models: selecting recipes for the week, aggregating ingredients across recipes, deduplicating ("two recipes both need onions"), unit conversion, and generating an editable grocery list from the result. Performance benchmarking with `criterion`: response time budgets for the aggregation endpoint, preventing performance regressions in CI.
-- **Security hardening** — Teaches CSP (Content Security Policy) headers, rate limiting with Tower middleware, SBOM generation, hardened container images for deployment. Secrets rotation: automating credential rotation for database and API keys without downtime. Database backup and disaster recovery: configuring automated backups via Terraform, point-in-time recovery, testing the restore process.
+- **Security hardening** — Teaches CSP (Content Security Policy) headers, rate limiting with Tower middleware, SBOM generation, hardened container images for deployment. Secrets rotation: automating credential rotation for database and API keys without downtime. Database disaster recovery: testing the restore process against real data (backups configured in Ch 2 via Terraform).
 - **Feature flags** — Teaches decoupling deployment from release (MinimumCD optimization phase).
 - **Progressive rollout** — Teaches canary deployments, monitoring, rollback in practice. Observability as a prerequisite: using `tracing` spans and metrics to compare canary vs. stable traffic. Load testing: establishing baseline capacity, stress testing failure modes, understanding system limits before rolling out to 100%.
 
