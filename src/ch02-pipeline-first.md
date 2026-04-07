@@ -73,6 +73,8 @@
 <!-- The reader builds: -->
 <!-- - GitHub Actions workflow: build, rustfmt, clippy, cargo-nextest, cargo-audit, cargo-deny -->
 <!-- - cargo-mutants configured (--in-diff on every push, full sweep nightly) -->
+<!-- - .pre-commit-config.yaml with hooks mirroring CI (rustfmt, clippy, cargo-audit) -->
+<!-- - prek installed and hooks enabled (cargo install prek && prek install) -->
 <!-- - Dependabot configuration for automated dependency update PRs -->
 <!-- - GitHub code scanning (SAST) and secret scanning enabled -->
 <!-- - Schema generation step in the pipeline (panschema generate + verify) -->
@@ -85,6 +87,8 @@
 <!-- - cargo-audit: dependency vulnerability scanning -->
 <!-- - cargo-deny: supply chain policy (license compliance, source vetting, duplicate detection) -->
 <!-- - cargo-mutants: why code coverage isn't enough, --in-diff as pipeline gate, nightly full sweep -->
+<!-- - prek: Rust-native pre-commit hooks, reads .pre-commit-config.yaml -->
+<!-- - Why local hooks mirror CI: 5-second local feedback vs 10-minute CI failure, keeps pipeline green -->
 <!-- - Dependabot: automated dependency update PRs -->
 <!-- - GitHub security features: SAST, secret scanning, dependency review -->
 
@@ -94,6 +98,7 @@
 <!--   - All work integrates to trunk at least daily -->
 <!--   - cargo-audit scans dependencies for known CVEs on every build -->
 <!--   - cargo-deny enforces supply chain policy -->
+<!--   - Pre-commit hooks mirror CI checks via prek -->
 <!--   - Dependabot is configured for automated dependency update PRs -->
 <!--   - GitHub code scanning (SAST) and secret scanning are enabled -->
 

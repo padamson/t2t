@@ -147,6 +147,7 @@ Every tool in the Rust development workflow is introduced when the reader first 
 | `cargo-leptos` | First Leptos project scaffold | Dual-target compilation (server binary + WASM client), hot reloading |
 | `cargo-nextest` | First unit test | Faster test runner, parallel execution, structured output |
 | `cargo-audit` | Pipeline security scanning | Dependency vulnerability detection, why this runs in CI |
+| `prek` | Pipeline configuration (Chapter 2) | Rust-native pre-commit hooks. Local hooks mirror CI checks for fast feedback. Reads `.pre-commit-config.yaml` (industry standard) |
 | `cargo-mutants` | First unit test (Chapter 3) | Mutation testing: proving tests catch real bugs, not just exercise code. Incremental (`--in-diff`) on every push; full sweep on a schedule |
 | `tracing` | Health-check endpoint (Chapter 2) | Structured logging and observability: spans, events, log levels, JSON output for production. The runtime complement to compile-time verification |
 | `thiserror` | First fallible service function (Chapter 3) | Domain-specific error types with context. Production error handling beyond `Result<T, E>` syntax |
@@ -389,6 +390,7 @@ Handles:
 | Error handling | thiserror | Domain-specific error types with context, error chains, clean propagation across service boundaries |
 | Benchmarking | criterion | Response time budgets, performance regression detection in CI |
 | SAST | GitHub Advanced Security | Static analysis, secret scanning, dependency review |
+| Pre-commit hooks | prek | Rust-native hook runner, mirrors CI checks locally for fast feedback, reads `.pre-commit-config.yaml` |
 | Local security review | Claude Code `/security-review` skill | AI-assisted code review for injection, auth bypass, XSS (human-in-the-loop) |
 
 ---

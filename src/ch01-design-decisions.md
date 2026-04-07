@@ -60,6 +60,14 @@ The pipeline enforces quality gates from commit one. Ours maps to the Rust toolc
 
 **GitHub security features.** Code scanning (SAST) and secret scanning enabled on the repository. These are free, built into GitHub, and catch categories of mistakes that careful coding alone won't prevent: accidentally committed API keys, known vulnerability patterns in code, insecure dependency configurations.
 
+### Local Hooks Mirror CI
+
+Every check the pipeline runs, you can run locally before you push. The tool that makes this practical is [prek](https://github.com/j178/prek), a Rust-native pre-commit hook runner. You define your checks once in `.pre-commit-config.yaml`, and the same file drives both local hooks (`prek run`) and the CI pipeline step.
+
+Why bother? Because a 5-second local check is better than a 10-minute CI failure. If rustfmt or clippy catches something before you push, the pipeline stays green. "All feature work stops when the pipeline is red" is a lot easier to follow when the pipeline is rarely red. The hooks aren't a gate that replaces CI. CI is still the authority. The hooks are a fast feedback loop that keeps you from wasting CI time on problems you could have caught at your desk.
+
+`prek` reads the same `.pre-commit-config.yaml` format used by the Python pre-commit framework (the industry standard), but it's written in Rust, installs with `cargo install prek`, and runs hooks significantly faster. No Python runtime required.
+
 ### Shift-Left Security: Two Layers
 
 Security in this project works at two levels. Locally, while you're writing code, an AI-assisted security review (a Claude Code skill) scans your changes for application-logic vulnerabilities: injection patterns, missing authentication checks, XSS risks, hardcoded secrets. You're in the loop. You see every finding and decide how to respond.
@@ -250,6 +258,7 @@ Every technology choice in this book maps back to a Continuous Delivery constrai
 | **panschema + LinkML** | The data model is a versioned architecture artifact. The pipeline generates and verifies all downstream representations. |
 | **cargo-deny** | Supply chain policy as code. License compliance, crate source vetting, and duplicate detection are pipeline gates, not afterthoughts. |
 | **Dependabot + GitHub Security** | Automated dependency updates and static analysis. Security scanning that doesn't depend on developer memory. |
+| **prek** (pre-commit hooks) | Local hooks mirror CI checks. Catch formatting, lint, and security issues in seconds before pushing, keeping the pipeline green. Rust-native, reads the industry-standard `.pre-commit-config.yaml`. |
 | **Podman + compose.yaml** | The local PostgreSQL runs in a container matching the production version. No environment divergence. |
 | **VS Code Devcontainer** | One-click setup gives every reader the same environment. No "works on my machine" debugging. |
 | **Tailwind CSS v4** | Utility-first CSS with a Rust-native standalone CLI. Component styles are Leptos components composing Tailwind utilities. No third-party CSS framework, no Node.js dependency. The CuisineIQ theme is a versioned artifact. |
@@ -334,6 +343,7 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 - [ ] Deployment to staging is automated via Terraform + GitHub Actions *(Ch 2)*
 - [ ] LinkML schema is versioned in the repo; panschema generates types and migrations in CI *(Ch 2)*
 - [ ] Structured logging with `tracing` from the first handler *(Ch 2)*
+- [ ] Pre-commit hooks mirror CI checks via `prek` *(Ch 2)*
 - [ ] First unit test exists and passes *(Ch 3)*
 
 ### Security
