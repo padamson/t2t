@@ -3,7 +3,7 @@
 All notable changes to the Trunk to Theory manuscript are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-Version scheme: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for small edits and fixes. `v1.0.0` marks the complete first edition. Each tagged version triggers a GitHub Release with a downloadable PDF.
+Version scheme: `v0.y.z` where `y` = first draft of chapter `y`, `z` = fixes or revisions to chapter `y` or earlier. `v1.0.0` marks the complete first edition. Each tagged version triggers a GitHub Release with a downloadable PDF.
 
 ## [v0.1.5] - 2026-04-11
 

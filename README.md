@@ -57,7 +57,7 @@ cd book && ./build-pdf.sh
 
 ## Versioning
 
-Tags follow semver: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for small edits. Each tag triggers a GitHub Release with a downloadable PDF. See [CHANGELOG.md](CHANGELOG.md).
+Tags use `v0.y.z` where `y` = first draft of chapter `y`, `z` = fixes or revisions to chapter `y` or earlier. Each tag triggers a GitHub Release with a downloadable PDF. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Related repos
 

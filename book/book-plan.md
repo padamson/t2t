@@ -39,7 +39,7 @@ Statuses: `scaffold` → `outlining` → `drafting` → `draft` → `review` →
 
 ### Versioning
 
-Tags follow semver: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for small edits. `v1.0.0` is the complete first edition. Version numbers increment sequentially — they are not tied to chapter numbers. A revision to Ch 02 triggered by Ch 05 work is just the next minor bump, not a Ch 02-specific version. `CHANGELOG.md` records what each version contains. Every tag triggers a GitHub Release with a downloadable PDF.
+Tags use `v0.y.z` where `y` = first draft of chapter `y`, `z` = fixes or revisions to chapter `y` or earlier. `v1.0.0` is the complete first edition. `CHANGELOG.md` records what each version contains. Every tag triggers a GitHub Release with a downloadable PDF.
 
 ---
 

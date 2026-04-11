@@ -38,7 +38,7 @@ Chapters reference app source directly via `{{#include ../../app/src/file.rs:anc
 - **No book references in public tool repos.** Public feature requests created by `/blocker` must stand on their own.
 - **Schema-driven development.** Data model in LinkML YAML; panschema generates types, SQL DDL, SHACL shapes, JSON Schema. The scimantic ontology (`padamson/scimantic-ontology`) is the authoritative schema source.
 - **Rust-only toolchain.** Fork/fix/contribute rather than switching to non-Rust alternatives.
-- **Versioning.** Semver tags: `v0.x.0` for chapters/revisions, `v0.x.y` for fixes, `v1.0.0` for first edition. See `CHANGELOG.md`.
+- **Versioning.** Tags: `v0.y.0` = first draft of chapter `y`, `v0.y.z` = fixes/revisions to chapter `y` or earlier, `v1.0.0` = first edition. See `CHANGELOG.md`.
 
 ## Related repos
 
