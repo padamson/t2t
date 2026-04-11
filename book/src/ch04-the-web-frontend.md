@@ -2,7 +2,7 @@
 
 <!-- The reader builds: -->
 <!-- - Base Leptos components: Button, Input, Card, Layout -->
-<!-- - Trunk to Theory theme from Tailwind v4 primitives -->
+<!-- - Scimantic theme from Tailwind v4 primitives -->
 <!-- - Component explorer route via theoria -->
 <!-- - Component tests via dokime -->
 <!-- - Questions board page rendering questions from the database via #[server] function -->

@@ -2,9 +2,9 @@
 
 *Building a Full-Stack Rust Application with Agentic Continuous Delivery*
 
-An open-source book and application. The book documents the complete process of building a full-stack Rust web application from scratch, structured around Agentic Continuous Delivery practices from [MinimumCD](https://minimumcd.org).
+An open-source book documenting the journey of building [Scimantic](https://github.com/padamson/t2t) — a scientific knowledge management platform — from scratch, structured around Agentic Continuous Delivery practices from [MinimumCD](https://minimumcd.org).
 
-The application is a scientific knowledge management platform based on scimantic concepts — pose research Questions, gather Evidence, form Hypotheses, design Experiments, and record Results — powered by a dual-database architecture (Oxigraph knowledge graph + PostgreSQL app state).
+Scimantic lets researchers pose Questions, gather Evidence, form Hypotheses, design Experiments, and record Results, powered by a dual-database architecture (Oxigraph knowledge graph + PostgreSQL app state). It's available as a hosted service or self-deployable.
 
 **Read the book:** [padamson.github.io/t2t](https://padamson.github.io/t2t)
 

@@ -6,9 +6,9 @@
 
 **Short form (if needed):** *Trunk to Theory: Full-Stack Rust with Agentic CD*
 
-**What this is:** A dogfooding exercise for a complete Rust-based toolchain for full-stack web apps. The author builds and maintains some of the key tools in this stack — [playwright-rust](https://github.com/padamson/playwright-rust) (E2E testing), [panschema](https://github.com/padamson/panschema) (schema-driven development), [theoria](https://github.com/padamson/theoria) (component explorer for Leptos), and [dokime](https://github.com/padamson/dokime) (component testing for Leptos). The book and Trunk to Theory are the proving ground: build a real product with these tools, find the gaps, fix them.
+**What this is:** A dogfooding exercise for a complete Rust-based toolchain for full-stack web apps. The author builds and maintains some of the key tools in this stack — [playwright-rust](https://github.com/padamson/playwright-rust) (E2E testing), [panschema](https://github.com/padamson/panschema) (schema-driven development), [theoria](https://github.com/padamson/theoria) (component explorer for Leptos), and [dokime](https://github.com/padamson/dokime) (component testing for Leptos). The book and Scimantic are the proving ground: build a real product with these tools, find the gaps, fix them.
 
-**Publishing model:** The book and Trunk to Theory are open source. The full interactive web version is freely available via mdbook. A print/ebook edition through No Starch Press (following the *Rust Programming Language* model) is a possible spinoff but not the primary goal.
+**Publishing model:** The book and Scimantic are open source. The full interactive web version is freely available via mdbook. A print/ebook edition through No Starch Press (following the *Rust Programming Language* model) is a possible spinoff but not the primary goal.
 
 **Manuscript Format:** Markdown via mdbook (Rust-based). Code snippets are pulled from the application source via mdbook `{{#include}}` directives with ANCHOR comments, following the approach used by *The Rust Programming Language* book. Admonitions via mdbook-admonish. Code callouts and print-quality PDF output are planned via custom mdbook preprocessors/backends (Rust). The entire book toolchain is Rust-based, consistent with the book's thesis.
 
@@ -57,15 +57,15 @@ The subtitle does the discoverability work, hitting search keywords: full-stack,
 
 ### The Pitch
 
-A step-by-step guide to building a full-stack Rust web application from scratch, structured around Agentic Continuous Delivery (ACD) practices from [MinimumCD](https://minimumcd.org). The reader builds Trunk to Theory — a scientific knowledge management platform based on scimantic concepts — as a real, deployable product with Infrastructure as Code on Linode. The app helps researchers pose Questions, gather Evidence, form Hypotheses, design Experiments, and record Results, all managed through a knowledge graph backed by Oxigraph and PostgreSQL.
+A step-by-step guide to building a full-stack Rust web application from scratch, structured around Agentic Continuous Delivery (ACD) practices from [MinimumCD](https://minimumcd.org). The reader builds Scimantic — a scientific knowledge management platform based on scimantic concepts — as a real, deployable product with Infrastructure as Code on AWS. The app helps researchers pose Questions, gather Evidence, form Hypotheses, design Experiments, and record Results, all managed through a knowledge graph backed by Oxigraph and PostgreSQL.
 
 ### What Makes This Book Different
 
-1. **Pipeline-first pedagogy.** Following the MinimumCD greenfield guide, the delivery pipeline is "feature zero." The first thing the reader builds is the CI/CD pipeline and a hello-world deployment to production on Linode. Every subsequent chapter flows features through this pipeline.
+1. **Pipeline-first pedagogy.** Following the MinimumCD greenfield guide, the delivery pipeline is "feature zero." The first thing the reader builds is the CI/CD pipeline and a hello-world deployment to production on AWS. Every subsequent chapter flows features through this pipeline.
 
 2. **Agentic CD framing.** The book is structured around the [ACD workflow](https://beyond.minimumcd.org/docs/agentic-cd/) from MinimumCD — intent descriptions, behavioral specifications as code, agent-assisted specification, test generation, implementation, and pipeline verification. This gives the book a narrative arc about *how* you build, not just *what* you build.
 
-3. **Real product, not a toy example.** Trunk to Theory is simultaneously the book's teaching vehicle and an open-source product. Readers follow along with a codebase that is deployed, maintained, and used by real researchers.
+3. **Real product, not a toy example.** Scimantic is simultaneously the book's teaching vehicle and an open-source product. Readers follow along with a codebase that is deployed, maintained, and used by real researchers.
 
 4. **Schema-driven development with dual databases.** The data model is a versioned LinkML schema — an architecture artifact in the ACD sense. panschema generates Rust types, SQL DDL, SHACL shapes, and JSON Schema from that single source. The schema is the contract between every layer of the stack — Oxigraph (knowledge graph) and PostgreSQL (app state) — and the pipeline enforces consistency.
 
@@ -80,7 +80,7 @@ A step-by-step guide to building a full-stack Rust web application from scratch,
 - OpenAPI-compliant REST API (for external consumers: CLI tools, Jupyter integrations, etc.)
 - Schema-driven development with LinkML and panschema (Rust types, SQL migrations, SHACL shapes, JSON Schema generated from a single source)
 - Dual database: Oxigraph (Rust-native RDF triple store) for the knowledge graph + PostgreSQL for app state (users, sessions)
-- Infrastructure as Code deployment to Linode (staging + production)
+- Infrastructure as Code deployment to AWS (staging + production)
 - CI/CD pipeline with GitHub Actions following MinimumCD practices
 - E2E testing with playwright-rust
 - Agentic CD workflow throughout
@@ -104,7 +104,7 @@ Scientific knowledge management is an ideal teaching vehicle because:
 
 ### Target Audience
 
-Developers who know basic Rust — they've read the first half of *The Rust Programming Language* ("The Book"), they can write a function, they understand ownership conceptually — and want to learn *everything else* through building a real product. Not just Leptos, not just Axum, not just "how to write a REST API in Rust." Everything: async Rust, full-stack web architecture, schema-driven data modeling, database access, knowledge graphs, WASM compilation, E2E testing, Infrastructure as Code, CI/CD pipelines, and the Agentic CD workflow. All of it taught through the act of building and shipping Trunk to Theory.
+Developers who know basic Rust — they've read the first half of *The Rust Programming Language* ("The Book"), they can write a function, they understand ownership conceptually — and want to learn *everything else* through building a real product. Not just Leptos, not just Axum, not just "how to write a REST API in Rust." Everything: async Rust, full-stack web architecture, schema-driven data modeling, database access, knowledge graphs, WASM compilation, E2E testing, Infrastructure as Code, CI/CD pipelines, and the Agentic CD workflow. All of it taught through the act of building and shipping Scimantic.
 
 This is a broader audience than existing Rust web books, which assume the reader already knows web development patterns and focus narrowly on server-side Rust.
 
@@ -182,7 +182,7 @@ playwright-rust gets more real estate than other individual tools because (a) th
 **What the reader learns about playwright-rust:**
 
 - **Architecture:** Rust API → JSON-RPC over stdio → Playwright server (Node.js) → browser native protocols → Chromium/Firefox/WebKit. Why this architecture gives full feature parity with Playwright's JS/Python/Java implementations.
-- **Practical E2E tests:** Writing meaningful tests against Trunk to Theory — pose a research question, link evidence, verify persistence across page reload, test the OpenAPI endpoints. Not toy examples.
+- **Practical E2E tests:** Writing meaningful tests against Scimantic — pose a research question, link evidence, verify persistence across page reload, test the OpenAPI endpoints. Not toy examples.
 - **Pipeline integration:** How playwright-rust tests run as a stage in the GitHub Actions pipeline, including browser installation in CI and handling headless vs. headed execution.
 - **The "it's all Rust" payoff:** This is the moment the reader sees the full picture — a Rust web app, tested by a Rust E2E framework, verified by a Rust-based pipeline, deployed by IaC. The testing tool is written in the same language as the application.
 
@@ -190,7 +190,7 @@ playwright-rust gets more real estate than other individual tools because (a) th
 
 Behavioral specifications are Rust test functions. Doc tests are executable specifications. Descriptive test function names communicate behavior. The compiler catches categories of bugs that other stacks need runtime testing to find. BDD is the practice; Rust's native testing tools are the implementation.
 
-The testing pyramid for Trunk to Theory:
+The testing pyramid for Scimantic:
 
 | Layer | Tool | What it tests | ACD Artifact |
 |---|---|---|---|
@@ -211,16 +211,16 @@ Each layer maps to an ACD artifact. The pipeline runs all layers on every commit
 
 Being honest about prerequisites while being generous about what's taught in context:
 
-- **Not a Rust-from-zero book.** The reader should have read at least the first half of *The Rust Programming Language* ("The Book") — chapters 1 through 10. They should be comfortable with variables, functions, structs, enums, basic pattern matching, and the conceptual idea of ownership. Everything beyond that — async, traits in practice, closures, error handling patterns, lifetimes, macros — is taught through building Trunk to Theory.
+- **Not a Rust-from-zero book.** The reader should have read at least the first half of *The Rust Programming Language* ("The Book") — chapters 1 through 10. They should be comfortable with variables, functions, structs, enums, basic pattern matching, and the conceptual idea of ownership. Everything beyond that — async, traits in practice, closures, error handling patterns, lifetimes, macros — is taught through building Scimantic.
 - **Not a toolchain reference.** Each tool gets enough explanation to use it effectively in this project. Readers who want exhaustive `clippy` lint configuration or advanced `cargo` workspace patterns are directed to official documentation.
-- **Not a complete Playwright tutorial.** The reader learns playwright-rust in the context of testing Trunk to Theory. They don't learn every Playwright API — they learn the subset needed for effective E2E testing of a full-stack web app.
-- **Not a Terraform deep-dive.** The reader learns enough Terraform to provision staging and production environments on Linode. They don't learn Terraform module design patterns or multi-cloud strategies.
+- **Not a complete Playwright tutorial.** The reader learns playwright-rust in the context of testing Scimantic. They don't learn every Playwright API — they learn the subset needed for effective E2E testing of a full-stack web app.
+- **Not a Terraform deep-dive.** The reader learns enough Terraform to provision staging and production environments on AWS. They don't learn Terraform module design patterns or multi-cloud strategies.
 - **Not a semantic web textbook.** The reader learns enough about RDF, SPARQL, and SHACL to build a working knowledge graph with Oxigraph. They don't learn OWL reasoning, federated SPARQL, or the full semantic web stack.
 - **Not a book you can skip around in.** Like *Obey the Testing Goat*, each chapter builds on the previous one. The codebase grows incrementally. The reader who jumps to Chapter 10 will be lost. This is a cover-to-cover book.
 
 ### MinimumCD as a Local Reference
 
-The book does not restate MinimumCD or ACD content. Instead, readers clone a pinned commit of the [MinimumCD Practice Guide](https://github.com/bdfinst/cd-migration) and run it locally with Hugo. The book directs readers to specific pages at key moments ("Read first: open localhost:1313/docs/agentic-cd/specification/first-class-artifacts/ and read the Intent Description section"), then brings them back to apply what they read to Trunk to Theory. This approach:
+The book does not restate MinimumCD or ACD content. Instead, readers clone a pinned commit of the [MinimumCD Practice Guide](https://github.com/bdfinst/cd-migration) and run it locally with Hugo. The book directs readers to specific pages at key moments ("Read first: open localhost:1313/docs/agentic-cd/specification/first-class-artifacts/ and read the Intent Description section"), then brings them back to apply what they read to Scimantic. This approach:
 
 - **Avoids close paraphrasing.** The book references the source directly rather than restating it.
 - **Gives editorial control.** Pinning to a specific commit means the reader sees exactly what the book expects, even if the live site changes.
@@ -233,7 +233,7 @@ The "Before You Begin" chapter walks readers through cloning and running the loc
 
 ---
 
-## 3. The Trunk to Theory Product
+## 3. The Scimantic Product
 
 ### Domain
 
@@ -255,7 +255,7 @@ Two critical design decisions shape the architecture:
 
 panschema generates outputs for both: SHACL shapes for Oxigraph validation, SQL DDL for PostgreSQL migrations.
 
-**2. Dual interface.** Trunk to Theory needs to serve both a web frontend (for desktop/mobile browsers) and external consumers (CLI tools, Jupyter notebook integrations, research automation scripts) via a REST API.
+**2. Dual interface.** Scimantic needs to serve both a web frontend (for desktop/mobile browsers) and external consumers (CLI tools, Jupyter notebook integrations, research automation scripts) via a REST API.
 
 Leptos server functions are designed for Leptos-to-Leptos communication and are not standard REST endpoints. External consumers need an OpenAPI-compliant REST API. However, Leptos runs *on top of* Axum — they share the same server process, Tokio runtime, and router. This enables a single-binary, dual-interface architecture:
 
@@ -328,7 +328,7 @@ The dual-interface, dual-database design creates a natural teaching progression:
 
 **PostgreSQL** for app infrastructure:
 - **SQLx:** Async, compile-time checked SQL queries. No ORM layer — raw SQL is more teachable and the abstraction isn't needed for the MVP scope.
-- **PostgreSQL:** Production-grade relational database for users, sessions, access control, audit logs. Chosen over SQLite because the MinimumCD greenfield guide mandates production-like environments from day one. Using Linode's Managed PostgreSQL service via Terraform.
+- **PostgreSQL:** Production-grade relational database for users, sessions, access control, audit logs. Chosen over SQLite because the MinimumCD greenfield guide mandates production-like environments from day one. Using RDS PostgreSQL on AWS via Terraform.
 - **Migrations:** SQLx's built-in migration system.
 
 **Oxigraph** for the knowledge graph:
@@ -340,7 +340,7 @@ The dual-interface, dual-database design creates a natural teaching progression:
 
 ### Schema-Driven Development: panschema + LinkML
 
-- **LinkML:** A YAML-based modeling language for defining data structures. The Trunk to Theory domain model is defined in the `scimantic-ontology` repo as a versioned LinkML schema. In ACD terms, this is architecture represented as a delivery artifact — versioned, machine-readable, and enforced by the pipeline.
+- **LinkML:** A YAML-based modeling language for defining data structures. The Scimantic domain model is defined in the `scimantic-ontology` repo as a versioned LinkML schema. In ACD terms, this is architecture represented as a delivery artifact — versioned, machine-readable, and enforced by the pipeline.
 - **panschema:** The author's own Rust CLI tool. The universal Rust data modeling tool, handling vocabularies, application data models, and ontologies. Reads LinkML schemas and generates:
   - **Rust structs** with `serde::Serialize`, `serde::Deserialize`, `sqlx::FromRow`, and `utoipa::ToSchema` derives.
   - **SQL DDL** for SQLx migrations (PostgreSQL app tables).
@@ -360,23 +360,24 @@ This provides the OpenAPI-compliant REST API that external consumers (CLI tools,
 
 ### Styling and UI: Tailwind CSS v4 + Component-Driven Development
 
-- **Tailwind CSS v4:** The Leptos ecosystem has standardized around Tailwind. The v4 standalone CLI is written in Rust (Lightning CSS), requiring no Node.js runtime. Utility-first CSS with a Trunk to Theory-specific configuration (color palette, typography scale, spacing tokens). No third-party CSS framework (DaisyUI or similar) — component styles are Leptos components composing Tailwind utilities directly.
+- **Tailwind CSS v4:** The Leptos ecosystem has standardized around Tailwind. The v4 standalone CLI is written in Rust (Lightning CSS), requiring no Node.js runtime. Utility-first CSS with a Scimantic-specific configuration (color palette, typography scale, spacing tokens). No third-party CSS framework (DaisyUI or similar) — component styles are Leptos components composing Tailwind utilities directly.
 - **Component-driven development:** The UI is built from composable Leptos components (Button, Input, Card, Layout, etc.) introduced in Chapter 4 and reused in every subsequent chapter. Each component encapsulates its Tailwind utility classes, accepts typed props, and renders consistently everywhere. New features compose from existing components.
 - **theoria:** The author's own Rust-native component catalog for Leptos (dogfooded in this book). Provides a dedicated route for browsing and testing UI components in isolation with configurable props. Essential for a pure-Tailwind approach where components are built from scratch rather than consumed from a CSS framework. Introduced in Chapter 4 alongside the first Leptos components.
 - **dokime:** The author's own Rust-native component testing framework for Leptos (dogfooded in this book). Verifies rendering, signal reactivity, and event handling for every component theoria catalogs, without a full browser. Introduced alongside theoria in Chapter 4.
-- **Trunk to Theory theme:** Color palette, typography, and spacing defined in Tailwind's configuration. Component styles composed from these tokens inside Leptos components. The theme is intentionally minimal but well-structured, showing the reader how to build and expand a design system from Tailwind primitives.
+- **Scimantic theme:** Color palette, typography, and spacing defined in Tailwind's configuration. Component styles composed from these tokens inside Leptos components. The theme is intentionally minimal but well-structured, showing the reader how to build and expand a design system from Tailwind primitives.
 
 ### Authentication
 
 For MVP chapters: session-based auth with `argon2` (password hashing) and `tower-sessions` (session management). OAuth can be layered on later for the broader product but is out of scope for the book.
 
-### Infrastructure as Code: Terraform + Linode (Akamai Cloud)
+### Infrastructure as Code: Terraform + AWS
 
-- **Terraform:** Linode Terraform Provider v3.0.0 (released June 2025). Mature, well-documented, simpler than Pulumi for a book context. HCL is teachable in a single chapter.
-- **Linode/Akamai Cloud:** Simpler and cheaper than AWS/GCP for a book's purposes. Readers can follow along without surprise cloud bills. Resources provisioned via Terraform:
-  - Linode compute instance(s)
-  - Managed PostgreSQL database
-  - NodeBalancer (load balancer)
+- **Terraform:** AWS Provider. Mature, well-documented, simpler than Pulumi for a book context. HCL is teachable in a single chapter. AWS requires more Terraform configuration than minimal cloud providers (VPC, security groups, IAM), but this is production-realistic and teaches infrastructure patterns readers will encounter in real jobs.
+- **AWS:** AWS free tier (12 months EC2 + RDS) covers readers through the book. The same infrastructure scales to production. Resources provisioned via Terraform:
+  - EC2 instance(s)
+  - RDS PostgreSQL database
+  - Application Load Balancer (ALB)
+  - VPC, security groups, IAM roles
   - Staging and production environments
 
 ### CI/CD: GitHub Actions
@@ -396,7 +397,7 @@ Using playwright-rust for E2E tests as a stage in the CI/CD pipeline is also a c
 ### Containers: Podman + Devcontainer
 
 - **Podman** over Docker Desktop: Fully open source, daemonless, rootless by default (better security posture), and `podman compose` is a drop-in replacement for `docker compose`. No licensing concerns for readers at companies over 250 employees. Docker remains compatible for readers who prefer it.
-- **`compose.yaml` with PostgreSQL + Oxigraph:** The local development databases run in containers, matching the same PostgreSQL version as Linode's Managed PostgreSQL in staging and production. Oxigraph runs as an embedded store in development (in-process, no container needed) but the compose file includes it for integration testing. This eliminates environment divergence from day one, consistent with the MinimumCD principle of production-like environments.
+- **`compose.yaml` with PostgreSQL + Oxigraph:** The local development databases run in containers, matching the same PostgreSQL version as RDS PostgreSQL in staging and production. Oxigraph runs as an embedded store in development (in-process, no container needed) but the compose file includes it for integration testing. This eliminates environment divergence from day one, consistent with the MinimumCD principle of production-like environments.
 - **VS Code Devcontainer (`.devcontainer/devcontainer.json`):** The recommended setup path for readers. Open the repo in VS Code, click "Reopen in Container," and get a fully configured environment: Rust toolchain, cargo-leptos, sqlx-cli, panschema, playwright-rust dependencies, Oxigraph, and PostgreSQL as a service. No "install these 12 things before Chapter 2" section. Readers who prefer manual setup can still follow along, but the devcontainer is the happy path.
 - **Podman Desktop:** Provides the GUI experience for container management. VS Code's container tooling works with both Podman and Docker.
 
@@ -417,13 +418,13 @@ Handles:
 | Schema modeling | panschema + LinkML | Single-source data model → Rust types, SQL DDL, SHACL shapes, JSON Schema, visualizations |
 | Knowledge graph | Oxigraph + sophia_rs | Rust-native RDF triple store, SPARQL 1.1 queries, knowledge graph persistence |
 | App database | SQLx + PostgreSQL | Async, compile-time verified queries for app state (users, sessions) |
-| Styling + UI | Tailwind CSS v4 | Utility-first CSS, Rust-native standalone CLI (no Node.js), Trunk to Theory theme |
+| Styling + UI | Tailwind CSS v4 | Utility-first CSS, Rust-native standalone CLI (no Node.js), Scimantic theme |
 | Component explorer | theoria | Rust-native component catalog (author's project, dogfooded here) |
 | Component testing | dokime | Rust-native component testing framework for Leptos (author's project, dogfooded here) |
 | Authentication | argon2 + tower-sessions | Password hashing + session management |
 | Containers | Podman + compose.yaml | Local dev databases, devcontainer, production images |
 | Dev environment | VS Code Devcontainer | One-click setup with full toolchain + PostgreSQL + Oxigraph |
-| IaC | Terraform + Linode Provider v3 | Infrastructure provisioning (staging + prod) |
+| IaC | Terraform + AWS Provider | Infrastructure provisioning (staging + prod) |
 | CI/CD | GitHub Actions | Pipeline automation, trunk-based workflow |
 | E2E Testing | playwright-rust | Cross-browser end-to-end tests (functional + DAST) |
 | Build tool | cargo-leptos | Dual-target compilation, hot reload |
@@ -539,7 +540,7 @@ The introductory chapter walks through all design decisions following MinimumCD 
 Opening argument: Starting with CD is dramatically easier than migrating to it. The pipeline is feature zero.
 
 - Introduce MinimumCD principles (CI, CD, TBD) as the constraints governing the entire book.
-- Explain that Chapter 2 will *not* start with `cargo leptos new`. It will start with a GitHub Actions workflow, Terraform configs for Linode, and deploying a health-check endpoint to production.
+- Explain that Chapter 2 will *not* start with `cargo leptos new`. It will start with a GitHub Actions workflow, Terraform configs for AWS, and deploying a health-check endpoint to production.
 - Walk through "feature zero validations" mapped to the Rust toolchain:
   - **Formatting:** `rustfmt` (enforced by pipeline)
   - **Linting:** `clippy` (enforced by pipeline)
@@ -566,7 +567,7 @@ Opening argument: Starting with CD is dramatically easier than migrating to it. 
 
 **6.1.3 Why This Architecture? The Dual-Interface, Dual-Database Design**
 
-- Start from Trunk to Theory's requirements: web app for browsers + REST API for external consumers + knowledge graph for scientific data + relational database for app state.
+- Start from Scimantic's requirements: web app for browsers + REST API for external consumers + knowledge graph for scientific data + relational database for app state.
 - Explain why Leptos server functions alone are insufficient (not standard REST endpoints).
 - Explain why a single database is insufficient: relational databases are poor at graph traversal; graph databases are poor at transactional app state.
 - Walk through the architecture diagram: Leptos routes + REST API routes → shared service layer → Oxigraph (knowledge graph) + PostgreSQL (app state).
@@ -575,7 +576,7 @@ Opening argument: Starting with CD is dramatically easier than migrating to it. 
   - **PostgreSQL over SQLite:** Production-like environments from day one.
   - **Oxigraph:** Rust-native, embeddable, no external service dependency for the knowledge graph.
   - **SQLx:** Compile-time query verification means the pipeline catches database contract violations before deployment.
-  - **Terraform + Linode:** Everything-as-code; infrastructure lives in the same repo and flows through the same pipeline.
+  - **Terraform + AWS:** Everything-as-code; infrastructure lives in the same repo and flows through the same pipeline.
   - **utoipa:** OpenAPI spec generated at compile time from the same Rust types — the API contract is enforced by the compiler.
   - **playwright-rust:** E2E testing in Rust, demonstrating ecosystem maturity.
 
@@ -613,7 +614,7 @@ Quality Gates:
 - [ ] Accessibility: WCAG 2.1 AA compliance, semantic HTML, ARIA, keyboard navigation
 - [ ] API endpoints are paginated with cursor-based pagination
 - [ ] HTTP caching headers on read endpoints
-- [ ] Pipeline deploys to a production-like staging environment on Linode
+- [ ] Pipeline deploys to a production-like staging environment on AWS
 - [ ] Rollback is tested and works
 - [ ] Application configuration is externalized (environment variables, not baked into the binary)
 - [ ] Artifacts are immutable (single binary built once, deployed to staging and production)
@@ -624,7 +625,7 @@ Security:
 - [ ] Database restore process is tested against real data
 
 Production Readiness:
-- [ ] Pipeline deploys to production on Linode
+- [ ] Pipeline deploys to production on AWS
 - [ ] Every commit that passes the pipeline is a deployment candidate
 - [ ] Deployment is a routine, low-risk event
 - [ ] Performance benchmarks run in CI (criterion); regressions block the pipeline
@@ -645,7 +646,7 @@ This chapter has five phases, each ending with a concrete checkpoint where the r
 
 **Phase 4: CI Pipeline.** GitHub Actions workflow with rustfmt, clippy, cargo-nextest, cargo-audit, cargo-deny, cargo-vet, cargo-mutants (`--in-diff` on every push, full sweep nightly). Pre-commit hooks via prek mirroring CI (including private key detection). Dependabot, GitHub code scanning, secret scanning. Scheduled weekly security workflow. SLSA provenance attestation on releases. Schema generation step verifies consistency. *Checkpoint: push to trunk, pipeline goes green.*
 
-**Phase 5: Infrastructure + Deployment.** Terraform configs for Linode (staging + production), HTTPS/TLS, secrets management, `/security-review` skill, pre-commit hooks, immutable artifacts, externalized configuration, rollback tested. *Checkpoint: hit the production URL over HTTPS, see "ok."*
+**Phase 5: Infrastructure + Deployment.** Terraform configs for AWS (staging + production), HTTPS/TLS, secrets management, `/security-review` skill, pre-commit hooks, immutable artifacts, externalized configuration, rollback tested. *Checkpoint: hit the production URL over HTTPS, see "ok."*
 
 **The reader learns:**
 - Podman, devcontainers, compose.yaml: one-click environment setup, production-matching database locally
@@ -658,7 +659,7 @@ This chapter has five phases, each ending with a concrete checkpoint where the r
 - Dependabot + GitHub security features (SAST, secret scanning)
 - Scheduled weekly security workflow (cargo-audit, cargo-deny, cargo-vet)
 - SLSA provenance attestation on release artifacts
-- Terraform basics: providers, resources, state. Linode provisioning with HTTPS/TLS.
+- Terraform basics: providers, resources, state. AWS provisioning with HTTPS/TLS.
 - Secrets management: GitHub Secrets, `.env`, never committing secrets
 - Local security tooling: `/security-review` skill and pre-commit hooks
 - Immutable artifacts, externalized configuration, rollback verification
@@ -667,7 +668,7 @@ This chapter has five phases, each ending with a concrete checkpoint where the r
 
 ### Chapter 3: The Database
 
-**The reader builds:** A managed PostgreSQL database on Linode (via Terraform) for app state, an embedded Oxigraph store for the knowledge graph, the `questions` table (from the SQL DDL generated by panschema in Chapter 2), SHACL shapes for validating Question entities in the knowledge graph, a service layer function to create a question in both stores, and the first unit test.
+**The reader builds:** An RDS PostgreSQL database on AWS (via Terraform) for app state, an embedded Oxigraph store for the knowledge graph, the `questions` table (from the SQL DDL generated by panschema in Chapter 2), SHACL shapes for validating Question entities in the knowledge graph, a service layer function to create a question in both stores, and the first unit test.
 
 **The reader learns:**
 - Why PostgreSQL over SQLite — the MinimumCD principle of production-like environments from day one.
@@ -688,14 +689,14 @@ This chapter has five phases, each ending with a concrete checkpoint where the r
 
 ### Chapter 4: The Web Frontend
 
-**The reader builds:** A set of base Leptos components (Button, Input, Card, Layout), a Trunk to Theory theme from Tailwind v4 primitives, a component catalog route via theoria, and a questions page that renders research questions from the knowledge graph via a `#[server]` function.
+**The reader builds:** A set of base Leptos components (Button, Input, Card, Layout), a Scimantic theme from Tailwind v4 primitives, a component catalog route via theoria, and a questions page that renders research questions from the knowledge graph via a `#[server]` function.
 
 **The reader learns:**
 - What Leptos is: SSR, hydration, WASM compilation. How `cargo-leptos` coordinates the dual-target build (server binary + WASM client).
 - Reactive signals: `create_signal`, getters and setters, fine-grained reactivity. Why Leptos doesn't use a virtual DOM.
 - RSX syntax: HTML-like templates inside Rust macros, how Rust's type system catches template errors at compile time.
 - Component-driven development: building composable UI components from the start. Base components (Button, Input, Card, Layout) are introduced here and reused in every subsequent chapter.
-- Tailwind CSS v4: setting up the Trunk to Theory theme (color palette, typography, spacing tokens) in Tailwind's configuration. Composing Tailwind utilities inside Leptos components. Using the standalone CLI (Rust-native, no Node.js). Why component styles live in Rust code, not in CSS class names from a framework.
+- Tailwind CSS v4: setting up the Scimantic theme (color palette, typography, spacing tokens) in Tailwind's configuration. Composing Tailwind utilities inside Leptos components. Using the standalone CLI (Rust-native, no Node.js). Why component styles live in Rust code, not in CSS class names from a framework.
 - theoria: setting up the component catalog, registering components with configurable props, using it as a development and documentation tool. The reader sees how isolated component development works when building a design system from Tailwind primitives.
 - dokime: writing component-level tests that verify rendering, signal reactivity, and event handling without a full browser. Testing every prop combination for each component theoria catalogs.
 - Accessibility from the start: semantic HTML structure in Leptos `view!` macros, ARIA roles and labels on custom components, keyboard navigation and focus management. WCAG 2.1 AA compliance as a design constraint, not an afterthought. The reader builds accessible components from the ground up rather than relying on a CSS framework's defaults. Accessibility-focused E2E tests with playwright-rust (keyboard-only navigation, screen reader label verification) are added to the testing suite.
@@ -772,7 +773,7 @@ The exact chapter breakdown for 7+ will be determined after the first six chapte
 
 ### Why `t2t` Stands Alone
 
-The repo should stand on its own as an open source project. People who've never heard of *Trunk to Theory* should be able to find it, understand what it is, and use it. The book drives people *to* the repo, but the repo shouldn't look like it only exists for the book. That's the difference between a real open source project and a "companion code" repo that nobody touches after publication.
+The repo should stand on its own as an open source project. People who've never heard of *Scimantic* should be able to find it, understand what it is, and use it. The book drives people *to* the repo, but the repo shouldn't look like it only exists for the book. That's the difference between a real open source project and a "companion code" repo that nobody touches after publication.
 
 ### Chapter Tags (Reader Experience)
 
@@ -792,14 +793,14 @@ tags:
 
 Tags are immutable snapshots of `main` at specific points in the book's development history — not branches. This is consistent with the MinimumCD principle of immutable artifacts, and with the trunk-based development the book teaches.
 
-`main` is the living, evolving product. It may be ahead of what the book covers, because Trunk to Theory continues to develop after publication.
+`main` is the living, evolving product. It may be ahead of what the book covers, because Scimantic continues to develop after publication.
 
 ### README Integration
 
 The `t2t` README includes a section like:
 
 ```markdown
-## Following Along with Trunk to Theory
+## Following Along with Scimantic
 
 This codebase is the companion to [Trunk to Theory](link).
 Each chapter's ending state is tagged:
@@ -858,9 +859,9 @@ t2t/
 │   │   ├── staging.tfvars
 │   │   └── production.tfvars
 │   └── modules/
-│       ├── compute/              # Linode instances
+│       ├── compute/              # EC2 instances
 │       ├── database/             # Managed PostgreSQL
-│       └── networking/           # NodeBalancer, DNS
+│       └── networking/           # ALB, VPC, DNS
 ├── schema/                       # Local schema artifacts (generated from scimantic-ontology)
 │   ├── t2t.yaml                  # App-specific schema extensions
 │   └── generated/                # panschema output (Rust types, SQL DDL, SHACL shapes, JSON Schema)
@@ -913,7 +914,7 @@ This approach ensures the book always references live, tested application code.
 
 ### Pre-Proposal Phase (Current)
 
-1. **Set up the pipeline first.** Create the `t2t` monorepo. GitHub Actions workflow + Terraform configs for Linode. Deploy a health-check endpoint to production before writing any application code.
+1. **Set up the pipeline first.** Create the `t2t` monorepo. GitHub Actions workflow + Terraform configs for AWS. Deploy a health-check endpoint to production before writing any application code.
 2. **Build the first vertical slice.** "A researcher can pose a question in their knowledge base." Leptos frontend + Oxigraph knowledge graph + PostgreSQL app state, deployed through the pipeline.
 3. **Write the first ACD cycle.** Intent description → behavioral test specs → implementation → pipeline verification → deployment. This becomes the template for every subsequent chapter.
 4. **Draft Chapters 1-2.** Chapter 1 (design decisions, as outlined above) and Chapter 2 (pipeline setup and hello-world deployment). Tag the monorepo at each chapter boundary.
@@ -924,7 +925,7 @@ Each chapter follows the ACD workflow: introduce a feature as an intent descript
 
 ---
 
-## 9. The Broader Trunk to Theory Product (Beyond the Book)
+## 9. The Broader Scimantic Product (Beyond the Book)
 
 The book covers the web application and REST API. The broader product includes:
 
@@ -932,7 +933,7 @@ The book covers the web application and REST API. The broader product includes:
 - **Jupyter integration** (consuming the REST API) for notebook-based research workflows
 - **VS Code extension** (future) for IDE-integrated knowledge management
 - **Subscription management** (Stripe integration) for hosted version
-- **Open-source core** — The Trunk to Theory codebase serves as a real-world open-source example of a full-stack Rust app with a dual-database architecture and knowledge graph
+- **Open-source core** — The Scimantic codebase serves as a real-world open-source example of a full-stack Rust app with a dual-database architecture and knowledge graph
 
 The CLI tool, Jupyter integration, VS Code extension, and subscription features are not covered in the book but are enabled by the architecture decisions made in the book (specifically, the OpenAPI-compliant REST API and the well-separated service layer).
 
@@ -975,9 +976,9 @@ The CLI tool, Jupyter integration, VS Code extension, and subscription features 
 - **minimumcd-mcp:** https://github.com/padamson/minimumcd-mcp (Rust MCP server for MinimumCD Practice Guide context; authoring tool, mentioned in Appendix A)
 
 ### Infrastructure
-- **Linode Terraform Provider v3:** https://www.akamai.com/blog/developers/linode-terraform-provider-v3-0-0
-- **Linode Terraform Docs:** https://www.linode.com/docs/guides/how-to-build-your-infrastructure-using-terraform-and-linode/
-- **Linode Managed PostgreSQL with Terraform:** https://www.linode.com/docs/guides/managed-postgresql-databases-on-akamai-cloud-with-terraform/
+- **AWS Terraform Provider:** https://registry.terraform.io/providers/hashicorp/aws/latest/docs
+- **AWS EC2 with Terraform:** https://developer.hashicorp.com/terraform/tutorials/aws-get-started
+- **AWS RDS PostgreSQL with Terraform:** https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance
 
 ### Semantic Web / Knowledge Graphs
 - **RDF Primer:** https://www.w3.org/TR/rdf11-primer/
@@ -994,8 +995,8 @@ The CLI tool, Jupyter integration, VS Code extension, and subscription features 
 ## 11. Open Questions
 
 - [ ] **Leptos version stability:** Leptos 0.8 is current with a path to 1.0. API has stabilized significantly but minor breaking changes still occur. Monitor for stability during writing.
-- [ ] **Licensing model:** Determine the boundary between open-source Trunk to Theory core and the commercial subscription product.
-- [ ] **Linode cost for readers:** Estimate the Linode bill a reader would incur following along with the book. Keep it minimal.
+- [ ] **Licensing model:** Determine the boundary between open-source Scimantic core and the commercial subscription product.
+- [ ] **AWS cost for readers:** Estimate the AWS bill a reader would incur following along with the book. AWS free tier (12 months EC2 + RDS) should cover most readers.
 - [ ] **ACD tooling maturity:** The ACD section of MinimumCD is relatively new. Stay aligned with updates as the framework evolves.
 - [ ] **Oxigraph production deployment:** Oxigraph is embeddable (in-process) for the book. Determine whether a separate Oxigraph server is needed for production scale, and whether that changes the Terraform/deployment story.
 - [ ] **SHACL validation performance:** Measure the overhead of SHACL validation on every write to the knowledge graph. Determine whether validation should be synchronous or deferred.

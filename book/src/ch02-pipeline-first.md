@@ -12,7 +12,7 @@
 <!-- The reader builds: -->
 <!-- - VS Code devcontainer with full Rust toolchain (.devcontainer/devcontainer.json) -->
 <!-- - Podman (or Docker) as the container runtime -->
-<!-- - Containerized PostgreSQL via compose.yaml, matching the Linode production version -->
+<!-- - Containerized PostgreSQL via compose.yaml, matching the AWS production version -->
 
 <!-- The reader learns: -->
 <!-- - Podman: daemonless, rootless, open source (no Docker Desktop licensing) -->
@@ -120,16 +120,16 @@
 <!-- ============================================================ -->
 
 <!-- The reader builds: -->
-<!-- - Terraform configs for Linode: compute instance, managed PostgreSQL, HTTPS/TLS, automated backups -->
+<!-- - Terraform configs for AWS: EC2 instance, RDS PostgreSQL, HTTPS/TLS, automated backups -->
 <!-- - Staging and production environments from the same Terraform configs -->
 <!-- - Deploy hello-world to production through the pipeline -->
-<!-- - Secrets management: GitHub Secrets for Linode API tokens, .env for local dev -->
+<!-- - Secrets management: GitHub Secrets for AWS credentials, .env for local dev -->
 <!-- - Local /security-review Claude Code skill and pre-commit hooks -->
 <!-- - Rollback tested: deploy, break, rollback, verify -->
 
 <!-- The reader learns: -->
 <!-- - Terraform basics: providers, resources, state, HCL syntax -->
-<!-- - Linode provisioning: compute instances, managed PostgreSQL, HTTPS/TLS, automated backups -->
+<!-- - AWS provisioning: EC2, RDS PostgreSQL, VPC, security groups, HTTPS/TLS, automated backups -->
 <!-- - Why staging and production use the same Terraform configs (no snowflake environments) -->
 <!-- - Secrets management: environment variables, GitHub Secrets, .env in .gitignore -->
 <!-- - HTTPS/TLS from day one (production-like environments) -->
@@ -144,8 +144,8 @@
 <!--   - HTTPS/TLS is configured on all deployed environments -->
 <!--   - Local /security-review skill and pre-commit hooks are set up -->
 <!--   - Deployment to staging is automated via Terraform + GitHub Actions -->
-<!--   - Pipeline deploys to a production-like staging environment on Linode -->
-<!--   - Pipeline deploys to production on Linode -->
+<!--   - Pipeline deploys to a production-like staging environment on AWS -->
+<!--   - Pipeline deploys to production on AWS -->
 <!--   - Every commit that passes the pipeline is a deployment candidate -->
 <!--   - Rollback is tested and works -->
 <!--   - Application configuration is externalized -->

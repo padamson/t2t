@@ -11,6 +11,10 @@ Monorepo containing both the application and the book:
 - `book/book-plan.md` — Full book plan with progress table (read this for context on any chapter)
 - `infra/` — Terraform IaC
 - `schema/` — LinkML schema (single source of truth for data model)
+
+## Application
+
+The application built in this book is **Scimantic** — a scientific knowledge management platform. "Trunk to Theory" is the book; "Scimantic" is the product.
 - `CHANGELOG.md` — What changed in each version
 - `dogfood-gaps.md` — Tracked gaps in tools (created by `/blocker`)
 - `.github/workflows/` — CI: app build/test/deploy + book HTML/PDF/Pages

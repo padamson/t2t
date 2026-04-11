@@ -30,7 +30,7 @@ No code yet. Just decisions. [Pipeline First](./ch02-pipeline-first.md) is where
 
 ## Why Pipeline-First?
 
-If you are new to CD, we will ask you to do something very counterintuitive in the [next chapter](./ch02-pipeline-first.md). You won't start by running `cargo leptos new`. You'll write a GitHub Actions workflow, Terraform configurations for Linode, and deploy a health-check endpoint to production. The application comes later. The pipeline comes first.
+If you are new to CD, we will ask you to do something very counterintuitive in the [next chapter](./ch02-pipeline-first.md). You won't start by running `cargo leptos new`. You'll write a GitHub Actions workflow, Terraform configurations for AWS, and deploy a health-check endpoint to production. The application comes later. The pipeline comes first.
 
 This is the core MinimumCD greenfield principle: **the delivery pipeline is feature zero.** It's not something you "set up later when there's enough code to deploy." The pipeline shapes the code, not the other way around.
 
@@ -80,7 +80,7 @@ The two layers complement each other. The local review catches things static too
 
 ### The Testing Pyramid
 
-Every test in Trunk to Theory is Rust code. Behavioral specifications are test functions: a test named `user_can_pose_research_question()` is both the spec and the verification. When the agent reads it, it knows what to implement. When the pipeline runs it, it knows whether the implementation is correct.
+Every test in Scimantic is Rust code. Behavioral specifications are test functions: a test named `user_can_pose_research_question()` is both the spec and the verification. When the agent reads it, it knows what to implement. When the pipeline runs it, it knows whether the implementation is correct.
 
 The pyramid has nine layers, each serving a different purpose and running at a different speed:
 
@@ -154,7 +154,7 @@ Other ecosystems have partially solved this. Prisma gives TypeScript developers 
 
 The ACD framework requires that architecture be represented as versioned delivery artifacts. For data modeling, this means the schema should be the source of truth, not the Rust code, not the SQL, not the OpenAPI spec.
 
-Trunk to Theory's domain model has two homes. The scientific ontology — the classes, relationships, and constraints that define what a Question, Evidence, Hypothesis, Experiment, and Result *are* — lives in the [scimantic-ontology](https://github.com/padamson/scimantic-ontology) repo as a versioned [LinkML](https://linkml.io/) schema. The application data model (users, sessions, app configuration) lives in the main repo. Both are YAML-based, and both flow through the same tool.
+Scimantic's domain model has two homes. The scientific ontology — the classes, relationships, and constraints that define what a Question, Evidence, Hypothesis, Experiment, and Result *are* — lives in the [scimantic-ontology](https://github.com/padamson/scimantic-ontology) repo as a versioned [LinkML](https://linkml.io/) schema. The application data model (users, sessions, app configuration) lives in the main repo. Both are YAML-based, and both flow through the same tool.
 
 Here's what a core entity looks like in LinkML:
 
@@ -203,7 +203,7 @@ The theme is the same at every layer: **catch inconsistencies at build time, not
 
 ## Why This Architecture?
 
-Trunk to Theory needs to serve two kinds of clients:
+Scimantic needs to serve two kinds of clients:
 
 1. **A web frontend** for desktop and mobile browsers, server-rendered HTML with client-side interactivity.
 2. **A REST API** for external consumers — CLI tools, Jupyter notebook integrations, data pipeline scripts, and other research tooling that interacts with the knowledge graph programmatically.
@@ -263,7 +263,7 @@ Every technology choice in this book maps back to a Continuous Delivery constrai
 | **PostgreSQL** over SQLite | MinimumCD requires production-like environments from day one. SQLite in dev, Postgres in prod is the kind of divergence that hides bugs. |
 | **Oxigraph** (Rust-native RDF store) | The knowledge graph runs in-process, embeds via RocksDB, and supports full SPARQL 1.1. No Java/Python triple store to manage separately. Same binary, same deployment, same pipeline. |
 | **SQLx** (compile-time checked queries) | The pipeline catches database contract violations before deployment. A typo in a column name breaks the build, not the user's session. |
-| **Terraform + Linode** | Everything-as-code. Infrastructure lives in the same repo and flows through the same pipeline. No snowflake servers, no manual provisioning. |
+| **Terraform + AWS** | Everything-as-code. Infrastructure lives in the same repo and flows through the same pipeline. No snowflake servers, no manual provisioning. |
 | **utoipa** (compile-time OpenAPI) | The API contract is generated from Rust types, not maintained separately. Contract drift is impossible. |
 | **playwright-rust** | E2E testing in Rust. The testing tool is written in the same language as the application. The entire testing story (unit, integration, E2E) is Rust. |
 | **cargo-mutants** | Tests must demonstrate they catch regressions. Code coverage measures what runs; mutation testing measures what's *verified*. Incremental on every push; full sweep on a schedule. |
@@ -275,7 +275,7 @@ Every technology choice in this book maps back to a Continuous Delivery constrai
 | **prek** (pre-commit hooks) | Local hooks mirror CI checks. Catch formatting, lint, and security issues in seconds before pushing, keeping the pipeline green. Rust-native, reads the industry-standard `.pre-commit-config.yaml`. |
 | **Podman + compose.yaml** | The local PostgreSQL runs in a container matching the production version. No environment divergence. |
 | **VS Code Devcontainer** | One-click setup gives every reader the same environment. No "works on my machine" debugging. |
-| **Tailwind CSS v4** | Utility-first CSS with a Rust-native standalone CLI. Component styles are Leptos components composing Tailwind utilities. No third-party CSS framework, no Node.js dependency. The Trunk to Theory theme is a versioned artifact. |
+| **Tailwind CSS v4** | Utility-first CSS with a Rust-native standalone CLI. Component styles are Leptos components composing Tailwind utilities. No third-party CSS framework, no Node.js dependency. The Scimantic theme is a versioned artifact. |
 | **theoria** | A component catalog where you browse, configure, and document every UI component in isolation. Ensures components are reusable and well-documented as the project grows. |
 | **dokime** | Fast component-level testing without a full browser. Verifies rendering and signal reactivity for every component theoria catalogs. Catches regressions without the overhead of E2E tests. |
 | **tracing** | Structured logging from day one. The pipeline verifies code is correct at build time; `tracing` shows what's happening at runtime. You can't do canary deployments without observability to compare. |
@@ -283,11 +283,11 @@ Every technology choice in this book maps back to a Continuous Delivery constrai
 
 ## Why Component-Driven?
 
-Trunk to Theory has several distinct UI surfaces: question boards where researchers pose and track questions, evidence timelines that link literature and observations to questions, hypothesis trees that visualize how evidence supports or refutes competing explanations, and experiment trackers that follow methodology from design through results. Without a deliberate approach to UI, every chapter would reinvent button styles, form layouts, and spacing. The result would be a codebase where no two pages look the same.
+Scimantic has several distinct UI surfaces: question boards where researchers pose and track questions, evidence timelines that link literature and observations to questions, hypothesis trees that visualize how evidence supports or refutes competing explanations, and experiment trackers that follow methodology from design through results. Without a deliberate approach to UI, every chapter would reinvent button styles, form layouts, and spacing. The result would be a codebase where no two pages look the same.
 
 We build the UI from composable Leptos components from the start. A Button component introduced in [The Web Frontend](./ch04-the-web-frontend.md) is the same Button used in [Results & Analysis](./ch11-results-and-analysis.md). A Card component that displays a research question also displays a piece of evidence or an experiment summary. The components are small, reusable, and tested in isolation.
 
-[Tailwind CSS v4](https://tailwindcss.com) provides the styling foundation. Its standalone CLI is written in Rust (using Lightning CSS), so it requires no Node.js runtime. Tailwind scans your Leptos `view!` macros for class names and generates only the CSS you actually use. We define a Trunk to Theory theme (color palette, typography scale, spacing tokens) in Tailwind's configuration, then compose those utilities inside Leptos components. A `Button` component isn't a CSS class name; it's a Rust function that encapsulates a specific combination of Tailwind utilities, accepts typed props (`variant`, `size`, `disabled`), and renders consistently everywhere it's used.
+[Tailwind CSS v4](https://tailwindcss.com) provides the styling foundation. Its standalone CLI is written in Rust (using Lightning CSS), so it requires no Node.js runtime. Tailwind scans your Leptos `view!` macros for class names and generates only the CSS you actually use. We define a Scimantic theme (color palette, typography scale, spacing tokens) in Tailwind's configuration, then compose those utilities inside Leptos components. A `Button` component isn't a CSS class name; it's a Rust function that encapsulates a specific combination of Tailwind utilities, accepts typed props (`variant`, `size`, `disabled`), and renders consistently everywhere it's used.
 
 This approach keeps the entire build chain Rust-native and eliminates a third-party CSS framework from the dependency tree. The component styles are *yours*, defined in your codebase, tested by your pipeline.
 
@@ -321,14 +321,14 @@ And then there's the convergence that makes this book timely: **AI coding assist
 
 ## What You're Going to Build
 
-Trunk to Theory is a scientific knowledge management platform. We chose this domain because:
+Scimantic is a scientific knowledge management platform. We chose this domain because:
 
 - **It's distinctive.** There is no existing "build a scientific knowledge graph in Rust" book. The domain exercises capabilities (ontologies, RDF, SPARQL, dual databases, graph traversal) that a generic CRUD app never touches. If you finish this book, you will have built something no tutorial has covered before.
 - **It deeply exercises the stack.** A knowledge graph demands complex relationships, graph queries, ontology validation, and dual-database coordination. Every layer of the architecture earns its keep. The schema-driven approach isn't a nice-to-have; it's essential when your data model is an ontology.
 - **It decomposes into natural vertical slices.** Pose a question. Link evidence. Form a hypothesis. Design an experiment. Record results. Each entity in the scientific workflow is independently deployable, exactly what CD demands.
 - **The author is a scientist.** This isn't a contrived teaching example. It's a tool the author will use in their own research. That alignment between dogfooding and career means the domain gets the depth it deserves.
 
-By the end of this book, Trunk to Theory will support:
+By the end of this book, Scimantic will support:
 
 - **Questions.** Pose research questions, tag them with scientific domains, and track their status from open through investigating to resolved. Questions are the starting point of every inquiry in the knowledge graph.
 - **Evidence.** Link literature references, datasets, and observations to questions. Evidence accumulates over time, forming the empirical foundation that supports or challenges your thinking. Each piece of evidence carries provenance: where it came from, when it was added, and which questions it addresses.
@@ -398,7 +398,7 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 
 ### Quality Gates
 
-- [ ] Pipeline deploys to a production-like staging environment on Linode *(Ch 2)*
+- [ ] Pipeline deploys to a production-like staging environment on AWS *(Ch 2)*
 - [ ] Rollback is tested and works *(Ch 2)*
 - [ ] Application configuration is externalized (environment variables, not baked into the binary) *(Ch 2)*
 - [ ] Artifacts are immutable (single binary built once, deployed to staging and production) *(Ch 2)*
@@ -421,7 +421,7 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 
 ### Production Readiness
 
-- [ ] Pipeline deploys to production on Linode *(Ch 2)*
+- [ ] Pipeline deploys to production on AWS *(Ch 2)*
 - [ ] Every commit that passes the pipeline is a deployment candidate *(Ch 2)*
 - [ ] Deployment is a routine, low-risk event *(Ch 5)*
 - [ ] Performance benchmarks run in CI (criterion); regressions block the pipeline *(Ch 11)*

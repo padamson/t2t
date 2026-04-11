@@ -1,7 +1,7 @@
 # The Database
 
 <!-- The reader builds: -->
-<!-- - Managed PostgreSQL on Linode via Terraform (app state: users, sessions) -->
+<!-- - Managed PostgreSQL on AWS via Terraform (app state: users, sessions) -->
 <!-- - Embedded Oxigraph instance for the knowledge graph -->
 <!-- - questions table in PostgreSQL from panschema-generated SQL DDL -->
 <!-- - SHACL shapes loaded into Oxigraph from panschema-generated output -->
