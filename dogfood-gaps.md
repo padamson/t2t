@@ -1,6 +1,6 @@
 # Dogfood Gaps
 
-Tracked gaps in tools used by the book and CuisineIQ. Created and updated by `/blocker`.
+Tracked gaps in tools used by the book and Trunk to Table app. Created and updated by `/blocker`.
 
 ## 2026-03-21 — mdbook-admonish: mdbook 0.5 compatibility
 - **Category:** Third-party

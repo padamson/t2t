@@ -1,6 +1,6 @@
 # Pipeline First
 
-<!-- Draft this chapter alongside building cuisineiq-rust -->
+<!-- Draft this chapter alongside building the app -->
 
 <!-- This chapter has five phases, each ending with a concrete checkpoint. -->
 <!-- The greenfield checklist items from Ch 1 are checked off in batches at each checkpoint. -->
@@ -72,11 +72,14 @@
 
 <!-- The reader builds: -->
 <!-- - GitHub Actions workflow: build, rustfmt, clippy, cargo-nextest, cargo-audit, cargo-deny -->
+<!-- - cargo-vet: supply chain vetting with trusted audit imports (Mozilla, Google, ISRG) -->
 <!-- - cargo-mutants configured (--in-diff on every push, full sweep nightly) -->
-<!-- - .pre-commit-config.yaml with hooks mirroring CI (rustfmt, clippy, cargo-audit) -->
+<!-- - .pre-commit-config.yaml with hooks mirroring CI (rustfmt, clippy, cargo-audit, detect-private-key) -->
 <!-- - prek installed and hooks enabled (cargo install prek && prek install) -->
 <!-- - Dependabot configuration for automated dependency update PRs -->
 <!-- - GitHub code scanning (SAST) and secret scanning enabled -->
+<!-- - Scheduled weekly security workflow (cargo-audit, cargo-deny, cargo-vet) -->
+<!-- - SLSA provenance attestation on release artifacts -->
 <!-- - Schema generation step in the pipeline (panschema generate + verify) -->
 
 <!-- The reader learns: -->
@@ -86,11 +89,15 @@
 <!-- - clippy: Rust linter, catches unidiomatic patterns and potential bugs -->
 <!-- - cargo-audit: dependency vulnerability scanning -->
 <!-- - cargo-deny: supply chain policy (license compliance, source vetting, duplicate detection) -->
+<!-- - cargo-vet: supply chain vetting — importing trusted audits from established organizations, vetting new dependencies -->
 <!-- - cargo-mutants: why code coverage isn't enough, --in-diff as pipeline gate, nightly full sweep -->
 <!-- - prek: Rust-native pre-commit hooks, reads .pre-commit-config.yaml -->
 <!-- - Why local hooks mirror CI: 5-second local feedback vs 10-minute CI failure, keeps pipeline green -->
+<!-- - Private key detection in pre-commit hooks: catch accidentally committed secrets before push -->
 <!-- - Dependabot: automated dependency update PRs -->
 <!-- - GitHub security features: SAST, secret scanning, dependency review -->
+<!-- - Scheduled security workflows: weekly scans catch CVEs disclosed between pushes -->
+<!-- - SLSA provenance: signing release artifacts so users can verify they came from CI -->
 
 <!-- Checkpoint: push to trunk, pipeline goes green (all gates pass) -->
 <!-- Greenfield checklist items checked off: -->
@@ -98,9 +105,12 @@
 <!--   - All work integrates to trunk at least daily -->
 <!--   - cargo-audit scans dependencies for known CVEs on every build -->
 <!--   - cargo-deny enforces supply chain policy -->
-<!--   - Pre-commit hooks mirror CI checks via prek -->
+<!--   - cargo-vet vets dependencies against trusted audit sets -->
+<!--   - Pre-commit hooks mirror CI checks via prek (including private key detection) -->
 <!--   - Dependabot is configured for automated dependency update PRs -->
 <!--   - GitHub code scanning (SAST) and secret scanning are enabled -->
+<!--   - Scheduled weekly security workflow runs cargo-audit, cargo-deny, cargo-vet -->
+<!--   - Release artifacts include SLSA provenance attestation -->
 
 <!-- ============================================================ -->
 <!-- PHASE 5: Infrastructure + Deployment -->

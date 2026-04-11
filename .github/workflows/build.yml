@@ -19,10 +19,14 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: book
     steps:
       - uses: actions/checkout@v4
 
       - name: Install fonts
+        working-directory: .
         run: |
           sudo apt-get update
           sudo apt-get install -y fonts-sil-charis fonts-inter fonts-jetbrains-mono
@@ -39,10 +43,11 @@ jobs:
             cargo-${{ runner.os }}-
 
       - name: Install mdbook and backends
+        working-directory: .
         run: |
           command -v mdbook || cargo install mdbook
           command -v mdbook-typst-pdf || cargo install mdbook-typst-pdf
-          cargo install --path tools/mdbook-quiz-pdf --force
+          cargo install --path book/tools/mdbook-quiz-pdf --force
 
       - name: Install forked backends
         run: |
@@ -50,6 +55,7 @@ jobs:
           mdbook-admonish install
 
       - name: Install mdbook-quiz (requires pnpm for JS assets)
+        working-directory: .
         run: |
           if command -v mdbook-quiz; then
             echo "mdbook-quiz already installed"
@@ -76,13 +82,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: book-html
-          path: build/html/
+          path: book/build/html/
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
           name: book-pdf
-          path: "build/typst-pdf/Trunk to Table.pdf"
+          path: "book/build/typst-pdf/Trunk to Table.pdf"
 
       - name: Setup Pages
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -92,7 +98,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build/html/
+          path: book/build/html/
 
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'

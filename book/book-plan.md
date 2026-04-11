@@ -6,9 +6,9 @@
 
 **Short form (if needed):** *Trunk to Table: Full-Stack Rust with Agentic CD*
 
-**What this is:** A dogfooding exercise for a complete Rust-based toolchain for full-stack web apps with native mobile API support. The author builds and maintains some of the key tools in this stack — [playwright-rust](https://github.com/padamson/playwright-rust) (E2E testing), [panschema](https://github.com/padamson/panschema) (schema-driven development), [theoria](https://github.com/padamson/theoria) (component explorer for Leptos), and [dokime](https://github.com/padamson/dokime) (component testing for Leptos). The book and CuisineIQ are the proving ground: build a real product with these tools, find the gaps, fix them.
+**What this is:** A dogfooding exercise for a complete Rust-based toolchain for full-stack web apps with native mobile API support. The author builds and maintains some of the key tools in this stack — [playwright-rust](https://github.com/padamson/playwright-rust) (E2E testing), [panschema](https://github.com/padamson/panschema) (schema-driven development), [theoria](https://github.com/padamson/theoria) (component explorer for Leptos), and [dokime](https://github.com/padamson/dokime) (component testing for Leptos). The book and Trunk to Table are the proving ground: build a real product with these tools, find the gaps, fix them.
 
-**Publishing model:** The book and CuisineIQ are open source. The full interactive web version is freely available via mdbook. A print/ebook edition through No Starch Press (following the *Rust Programming Language* model) is a possible spinoff but not the primary goal.
+**Publishing model:** The book and Trunk to Table are open source. The full interactive web version is freely available via mdbook. A print/ebook edition through No Starch Press (following the *Rust Programming Language* model) is a possible spinoff but not the primary goal.
 
 **Manuscript Format:** Markdown via mdbook (Rust-based). Code snippets are pulled from per-chapter `listings/` directories via mdbook `{{#include}}` directives with ANCHOR comments, following the approach used by *The Rust Programming Language* book. Admonitions via mdbook-admonish. Code callouts and print-quality PDF output are planned via custom mdbook preprocessors/backends (Rust). The entire book toolchain is Rust-based, consistent with the book's thesis.
 
@@ -18,7 +18,7 @@
 
 Statuses: `scaffold` → `outlining` → `drafting` → `draft` → `review` → `final`
 
-| Ch | Title | Status | cuisineiq-rust tag | Code scope | Depends on | Notes |
+| Ch | Title | Status | t2t tag | Code scope | Depends on | Notes |
 |----|-------|--------|--------------------|------------|------------|-------|
 | 00 | Before You Begin | scaffold | — | — | — | No code; reading assignments + local MinimumCD setup |
 | 01 | Design Decisions | draft | `chapter-01` | CLAUDE.md, design docs | — | Prose complete, needs review |
@@ -57,7 +57,7 @@ The subtitle does the discoverability work, hitting search keywords: full-stack,
 
 ### The Pitch
 
-A step-by-step guide to building a full-stack Rust web application from scratch, structured around Agentic Continuous Delivery (ACD) practices from [MinimumCD](https://minimumcd.org). The reader builds CuisineIQ — a grocery list and recipe management app — as a real, deployable product with Infrastructure as Code on Linode.
+A step-by-step guide to building a full-stack Rust web application from scratch, structured around Agentic Continuous Delivery (ACD) practices from [MinimumCD](https://minimumcd.org). The reader builds Trunk to Table — a grocery list and recipe management app — as a real, deployable product with Infrastructure as Code on Linode.
 
 ### What Makes This Book Different
 
@@ -65,7 +65,7 @@ A step-by-step guide to building a full-stack Rust web application from scratch,
 
 2. **Agentic CD framing.** The book is structured around the [ACD workflow](https://beyond.minimumcd.org/docs/agentic-cd/) from MinimumCD — intent descriptions, behavioral specifications as code, agent-assisted specification, test generation, implementation, and pipeline verification. This gives the book a narrative arc about *how* you build, not just *what* you build.
 
-3. **Real product, not a toy example.** CuisineIQ is simultaneously the book's teaching vehicle and an open-source commercial product. Readers follow along with a codebase that is deployed, maintained, and used by real people.
+3. **Real product, not a toy example.** Trunk to Table is simultaneously the book's teaching vehicle and an open-source commercial product. Readers follow along with a codebase that is deployed, maintained, and used by real people.
 
 4. **Schema-driven development.** The data model is a versioned LinkML schema — an architecture artifact in the ACD sense. panschema generates Rust types, SQL migrations, and JSON Schema from that single source. The schema is the contract between every layer of the stack, and the pipeline enforces consistency.
 
@@ -92,7 +92,7 @@ A step-by-step guide to building a full-stack Rust web application from scratch,
 
 ### Target Audience
 
-Developers who know basic Rust — they've read the first half of *The Rust Programming Language* ("The Book"), they can write a function, they understand ownership conceptually — and want to learn *everything else* through building a real product. Not just Leptos, not just Axum, not just "how to write a REST API in Rust." Everything: async Rust, full-stack web architecture, schema-driven data modeling, database access, WASM compilation, E2E testing, Infrastructure as Code, CI/CD pipelines, and the Agentic CD workflow. All of it taught through the act of building and shipping CuisineIQ.
+Developers who know basic Rust — they've read the first half of *The Rust Programming Language* ("The Book"), they can write a function, they understand ownership conceptually — and want to learn *everything else* through building a real product. Not just Leptos, not just Axum, not just "how to write a REST API in Rust." Everything: async Rust, full-stack web architecture, schema-driven data modeling, database access, WASM compilation, E2E testing, Infrastructure as Code, CI/CD pipelines, and the Agentic CD workflow. All of it taught through the act of building and shipping Trunk to Table.
 
 This is a broader audience than existing Rust web books, which assume the reader already knows web development patterns and focus narrowly on server-side Rust.
 
@@ -147,6 +147,7 @@ Every tool in the Rust development workflow is introduced when the reader first 
 | `cargo-leptos` | First Leptos project scaffold | Dual-target compilation (server binary + WASM client), hot reloading |
 | `cargo-nextest` | First unit test | Faster test runner, parallel execution, structured output |
 | `cargo-audit` | Pipeline security scanning | Dependency vulnerability detection, why this runs in CI |
+| `cargo-vet` | Pipeline configuration (Chapter 2) | Supply chain vetting: importing trusted audits, verifying dependency provenance, exempting new crates |
 | `prek` | Pipeline configuration (Chapter 2) | Rust-native pre-commit hooks. Local hooks mirror CI checks for fast feedback. Reads `.pre-commit-config.yaml` (industry standard) |
 | `cargo-mutants` | First unit test (Chapter 3) | Mutation testing: proving tests catch real bugs, not just exercise code. Incremental (`--in-diff`) on every push; full sweep on a schedule |
 | `tracing` | Health-check endpoint (Chapter 2) | Structured logging and observability: spans, events, log levels, JSON output for production. The runtime complement to compile-time verification |
@@ -166,7 +167,7 @@ playwright-rust gets more real estate than other individual tools because (a) th
 **What the reader learns about playwright-rust:**
 
 - **Architecture:** Rust API → JSON-RPC over stdio → Playwright server (Node.js) → browser native protocols → Chromium/Firefox/WebKit. Why this architecture gives full feature parity with Playwright's JS/Python/Java implementations.
-- **Practical E2E tests:** Writing meaningful tests against CuisineIQ — add a grocery item, check it off, verify persistence across page reload, test the OpenAPI endpoints. Not toy examples.
+- **Practical E2E tests:** Writing meaningful tests against Trunk to Table — add a grocery item, check it off, verify persistence across page reload, test the OpenAPI endpoints. Not toy examples.
 - **Pipeline integration:** How playwright-rust tests run as a stage in the GitHub Actions pipeline, including browser installation in CI and handling headless vs. headed execution.
 - **The "it's all Rust" payoff:** This is the moment the reader sees the full picture — a Rust web app, tested by a Rust E2E framework, verified by a Rust-based pipeline, deployed by IaC. The testing tool is written in the same language as the application.
 
@@ -174,7 +175,7 @@ playwright-rust gets more real estate than other individual tools because (a) th
 
 Behavioral specifications are Rust test functions. Doc tests are executable specifications. Descriptive test function names communicate behavior. The compiler catches categories of bugs that other stacks need runtime testing to find. BDD is the practice; Rust's native testing tools are the implementation.
 
-The testing pyramid for CuisineIQ:
+The testing pyramid for Trunk to Table:
 
 | Layer | Tool | What it tests | ACD Artifact |
 |---|---|---|---|
@@ -194,15 +195,15 @@ Each layer maps to an ACD artifact. The pipeline runs all layers on every commit
 
 Being honest about prerequisites while being generous about what's taught in context:
 
-- **Not a Rust-from-zero book.** The reader should have read at least the first half of *The Rust Programming Language* ("The Book") — chapters 1 through 10. They should be comfortable with variables, functions, structs, enums, basic pattern matching, and the conceptual idea of ownership. Everything beyond that — async, traits in practice, closures, error handling patterns, lifetimes, macros — is taught through building CuisineIQ.
+- **Not a Rust-from-zero book.** The reader should have read at least the first half of *The Rust Programming Language* ("The Book") — chapters 1 through 10. They should be comfortable with variables, functions, structs, enums, basic pattern matching, and the conceptual idea of ownership. Everything beyond that — async, traits in practice, closures, error handling patterns, lifetimes, macros — is taught through building Trunk to Table.
 - **Not a toolchain reference.** Each tool gets enough explanation to use it effectively in this project. Readers who want exhaustive `clippy` lint configuration or advanced `cargo` workspace patterns are directed to official documentation.
-- **Not a complete Playwright tutorial.** The reader learns playwright-rust in the context of testing CuisineIQ. They don't learn every Playwright API — they learn the subset needed for effective E2E testing of a full-stack web app.
+- **Not a complete Playwright tutorial.** The reader learns playwright-rust in the context of testing Trunk to Table. They don't learn every Playwright API — they learn the subset needed for effective E2E testing of a full-stack web app.
 - **Not a Terraform deep-dive.** The reader learns enough Terraform to provision staging and production environments on Linode. They don't learn Terraform module design patterns or multi-cloud strategies.
 - **Not a book you can skip around in.** Like *Obey the Testing Goat*, each chapter builds on the previous one. The codebase grows incrementally. The reader who jumps to Chapter 10 will be lost. This is a cover-to-cover book.
 
 ### MinimumCD as a Local Reference
 
-The book does not restate MinimumCD or ACD content. Instead, readers clone a pinned commit of the [MinimumCD Practice Guide](https://github.com/bdfinst/cd-migration) and run it locally with Hugo. The book directs readers to specific pages at key moments ("Read first: open localhost:1313/docs/agentic-cd/specification/first-class-artifacts/ and read the Intent Description section"), then brings them back to apply what they read to CuisineIQ. This approach:
+The book does not restate MinimumCD or ACD content. Instead, readers clone a pinned commit of the [MinimumCD Practice Guide](https://github.com/bdfinst/cd-migration) and run it locally with Hugo. The book directs readers to specific pages at key moments ("Read first: open localhost:1313/docs/agentic-cd/specification/first-class-artifacts/ and read the Intent Description section"), then brings them back to apply what they read to Trunk to Table. This approach:
 
 - **Avoids close paraphrasing.** The book references the source directly rather than restating it.
 - **Gives editorial control.** Pinning to a specific commit means the reader sees exactly what the book expects, even if the live site changes.
@@ -215,7 +216,7 @@ The "Before You Begin" chapter walks readers through cloning and running the loc
 
 ---
 
-## 3. The CuisineIQ Product
+## 3. The Trunk to Table Product
 
 ### Domain
 
@@ -228,7 +229,7 @@ A grocery list and recipe management application. The domain is ideal for a teac
 
 ### Architecture: Dual-Interface Design
 
-A critical design decision: CuisineIQ needs to serve both a web frontend (for desktop/mobile browsers) and native mobile apps (iOS/Android, built separately, not covered in the book). This drives the architecture.
+A critical design decision: Trunk to Table needs to serve both a web frontend (for desktop/mobile browsers) and native mobile apps (iOS/Android, built separately, not covered in the book). This drives the architecture.
 
 Leptos server functions are designed for Leptos-to-Leptos communication and are not standard REST endpoints. Native mobile apps need an OpenAPI-compliant REST API. However, Leptos runs *on top of* Axum — they share the same server process, Tokio runtime, and router. This enables a single-binary, dual-interface architecture:
 
@@ -299,7 +300,7 @@ The dual-interface design creates a natural teaching progression:
 
 ### Schema-Driven Development: panschema + LinkML
 
-- **LinkML:** A YAML-based modeling language for defining data structures. The CuisineIQ domain model (grocery items, recipes, ingredients, users) is defined once in LinkML YAML and versioned in the repository alongside the code. In ACD terms, this is architecture represented as a delivery artifact — versioned, machine-readable, and enforced by the pipeline.
+- **LinkML:** A YAML-based modeling language for defining data structures. The Trunk to Table domain model (grocery items, recipes, ingredients, users) is defined once in LinkML YAML and versioned in the repository alongside the code. In ACD terms, this is architecture represented as a delivery artifact — versioned, machine-readable, and enforced by the pipeline.
 - **panschema:** The author's own Rust CLI tool. Reads LinkML schemas and generates:
   - **Rust structs** with `serde::Serialize`, `serde::Deserialize`, `sqlx::FromRow`, and `utoipa::ToSchema` derives.
   - **SQL DDL** for SQLx migrations.
@@ -316,11 +317,11 @@ This provides the OpenAPI-compliant REST API that native mobile apps (and any ot
 
 ### Styling and UI: Tailwind CSS v4 + Component-Driven Development
 
-- **Tailwind CSS v4:** The Leptos ecosystem has standardized around Tailwind. The v4 standalone CLI is written in Rust (Lightning CSS), requiring no Node.js runtime. Utility-first CSS with a CuisineIQ-specific configuration (color palette, typography scale, spacing tokens). No third-party CSS framework (DaisyUI or similar) — component styles are Leptos components composing Tailwind utilities directly.
+- **Tailwind CSS v4:** The Leptos ecosystem has standardized around Tailwind. The v4 standalone CLI is written in Rust (Lightning CSS), requiring no Node.js runtime. Utility-first CSS with a Trunk to Table-specific configuration (color palette, typography scale, spacing tokens). No third-party CSS framework (DaisyUI or similar) — component styles are Leptos components composing Tailwind utilities directly.
 - **Component-driven development:** The UI is built from composable Leptos components (Button, Input, Card, Layout, etc.) introduced in Chapter 4 and reused in every subsequent chapter. Each component encapsulates its Tailwind utility classes, accepts typed props, and renders consistently everywhere. New features compose from existing components.
 - **theoria:** The author's own Rust-native component catalog for Leptos (dogfooded in this book). Provides a dedicated route for browsing and testing UI components in isolation with configurable props. Essential for a pure-Tailwind approach where components are built from scratch rather than consumed from a CSS framework. Introduced in Chapter 4 alongside the first Leptos components.
 - **dokime:** The author's own Rust-native component testing framework for Leptos (dogfooded in this book). Verifies rendering, signal reactivity, and event handling for every component theoria catalogs, without a full browser. Introduced alongside theoria in Chapter 4.
-- **CuisineIQ theme:** Color palette, typography, and spacing defined in Tailwind's configuration. Component styles composed from these tokens inside Leptos components. The theme is intentionally minimal but well-structured, showing the reader how to build and expand a design system from Tailwind primitives.
+- **Trunk to Table theme:** Color palette, typography, and spacing defined in Tailwind's configuration. Component styles composed from these tokens inside Leptos components. The theme is intentionally minimal but well-structured, showing the reader how to build and expand a design system from Tailwind primitives.
 
 ### Authentication
 
@@ -372,7 +373,7 @@ Handles:
 | REST API | Axum handlers + utoipa | OpenAPI-compliant API for mobile apps |
 | Schema modeling | panschema + LinkML | Single-source data model → Rust types, SQL DDL, JSON Schema |
 | Database | SQLx + PostgreSQL | Async, compile-time verified queries |
-| Styling + UI | Tailwind CSS v4 | Utility-first CSS, Rust-native standalone CLI (no Node.js), CuisineIQ theme |
+| Styling + UI | Tailwind CSS v4 | Utility-first CSS, Rust-native standalone CLI (no Node.js), Trunk to Table theme |
 | Component explorer | theoria | Rust-native component catalog (author's project, dogfooded here) |
 | Component testing | dokime | Rust-native component testing framework for Leptos (author's project, dogfooded here) |
 | Authentication | argon2 + tower-sessions | Password hashing + session management |
@@ -385,6 +386,7 @@ Handles:
 | API documentation | utoipa-swagger-ui | Swagger UI served from the application binary |
 | Dependency security | cargo-audit + Dependabot | CVE scanning + automated dependency update PRs |
 | Supply chain policy | cargo-deny | License compliance, crate source vetting, duplicate detection |
+| Supply chain vetting | cargo-vet | Trusted audit imports (Mozilla, Google, ISRG), dependency provenance verification |
 | Mutation testing | cargo-mutants | Test quality verification: incremental (`--in-diff`) on every push, full sweep on schedule |
 | Observability | tracing + tracing-subscriber | Structured logging, spans, events, JSON output for production log aggregation |
 | Error handling | thiserror | Domain-specific error types with context, error chains, clean propagation across service boundaries |
@@ -519,7 +521,7 @@ Opening argument: Starting with CD is dramatically easier than migrating to it. 
 
 **6.1.3 Why This Architecture? The Dual-Interface Design**
 
-- Start from CuisineIQ's requirements: web app for browsers + REST API for native mobile apps.
+- Start from Trunk to Table's requirements: web app for browsers + REST API for native mobile apps.
 - Explain why Leptos server functions alone are insufficient (not standard REST endpoints).
 - Walk through the architecture diagram: Leptos routes + REST API routes → shared service layer → SQLx + PostgreSQL.
 - Explain why the shared service layer matters: domain logic tested once, type system guarantees data shape agreement.
@@ -592,7 +594,7 @@ This chapter has five phases, each ending with a concrete checkpoint where the r
 
 **Phase 3: Schema Foundation.** LinkML schema for GroceryItem and ItemStatus, `panschema generate` produces Rust types and SQL DDL. *Checkpoint: `cargo build` passes with generated types.*
 
-**Phase 4: CI Pipeline.** GitHub Actions workflow with rustfmt, clippy, cargo-nextest, cargo-audit, cargo-deny, cargo-mutants (`--in-diff` on every push, full sweep nightly). Dependabot, GitHub code scanning, secret scanning. Schema generation step verifies consistency. *Checkpoint: push to trunk, pipeline goes green.*
+**Phase 4: CI Pipeline.** GitHub Actions workflow with rustfmt, clippy, cargo-nextest, cargo-audit, cargo-deny, cargo-vet, cargo-mutants (`--in-diff` on every push, full sweep nightly). Pre-commit hooks via prek mirroring CI (including private key detection). Dependabot, GitHub code scanning, secret scanning. Scheduled weekly security workflow. SLSA provenance attestation on releases. Schema generation step verifies consistency. *Checkpoint: push to trunk, pipeline goes green.*
 
 **Phase 5: Infrastructure + Deployment.** Terraform configs for Linode (staging + production), HTTPS/TLS, secrets management, `/security-review` skill, pre-commit hooks, immutable artifacts, externalized configuration, rollback tested. *Checkpoint: hit the production URL over HTTPS, see "ok."*
 
@@ -602,8 +604,11 @@ This chapter has five phases, each ending with a concrete checkpoint where the r
 - Structured logging with `tracing`: spans, events, `tracing-subscriber` for human-readable (dev) and JSON (prod) output
 - LinkML basics: classes, attributes, enums in YAML. panschema: generating Rust types and SQL DDL from the schema.
 - GitHub Actions: workflow files, triggers, jobs, steps. Pipeline-enforced quality gates.
-- `rustfmt`, `clippy`, `cargo-audit`, `cargo-deny`, `cargo-mutants` as pipeline gates
+- `rustfmt`, `clippy`, `cargo-audit`, `cargo-deny`, `cargo-vet`, `cargo-mutants` as pipeline gates
+- `prek`: Rust-native pre-commit hooks mirroring CI, including private key detection
 - Dependabot + GitHub security features (SAST, secret scanning)
+- Scheduled weekly security workflow (cargo-audit, cargo-deny, cargo-vet)
+- SLSA provenance attestation on release artifacts
 - Terraform basics: providers, resources, state. Linode provisioning with HTTPS/TLS.
 - Secrets management: GitHub Secrets, `.env`, never committing secrets
 - Local security tooling: `/security-review` skill and pre-commit hooks
@@ -631,14 +636,14 @@ This chapter has five phases, each ending with a concrete checkpoint where the r
 
 ### Chapter 4: The Web Frontend
 
-**The reader builds:** A set of base Leptos components (Button, Input, Card, Layout), a CuisineIQ theme from Tailwind v4 primitives, a component catalog route via theoria, and a grocery list page that renders items from the database via a `#[server]` function.
+**The reader builds:** A set of base Leptos components (Button, Input, Card, Layout), a Trunk to Table theme from Tailwind v4 primitives, a component catalog route via theoria, and a grocery list page that renders items from the database via a `#[server]` function.
 
 **The reader learns:**
 - What Leptos is: SSR, hydration, WASM compilation. How `cargo-leptos` coordinates the dual-target build (server binary + WASM client).
 - Reactive signals: `create_signal`, getters and setters, fine-grained reactivity. Why Leptos doesn't use a virtual DOM.
 - RSX syntax: HTML-like templates inside Rust macros, how Rust's type system catches template errors at compile time.
 - Component-driven development: building composable UI components from the start. Base components (Button, Input, Card, Layout) are introduced here and reused in every subsequent chapter.
-- Tailwind CSS v4: setting up the CuisineIQ theme (color palette, typography, spacing tokens) in Tailwind's configuration. Composing Tailwind utilities inside Leptos components. Using the standalone CLI (Rust-native, no Node.js). Why component styles live in Rust code, not in CSS class names from a framework.
+- Tailwind CSS v4: setting up the Trunk to Table theme (color palette, typography, spacing tokens) in Tailwind's configuration. Composing Tailwind utilities inside Leptos components. Using the standalone CLI (Rust-native, no Node.js). Why component styles live in Rust code, not in CSS class names from a framework.
 - theoria: setting up the component catalog, registering components with configurable props, using it as a development and documentation tool. The reader sees how isolated component development works when building a design system from Tailwind primitives.
 - dokime: writing component-level tests that verify rendering, signal reactivity, and event handling without a full browser. Testing every prop combination for each component theoria catalogs.
 - Accessibility from the start: semantic HTML structure in Leptos `view!` macros, ARIA roles and labels on custom components, keyboard navigation and focus management. WCAG 2.1 AA compliance as a design constraint, not an afterthought. The reader builds accessible components from the ground up rather than relying on a CSS framework's defaults. Accessibility-focused E2E tests with playwright-rust (keyboard-only navigation, screen reader label verification) are added to the testing suite.
@@ -705,13 +710,13 @@ The exact chapter breakdown for 7+ will be determined after the first six chapte
 
 | Repo | Visibility | Purpose |
 |---|---|---|
-| `t2t` | Public | Book manuscript (mdbook/Markdown), planning docs, figures. Code listings extracted from `cuisineiq-rust` at each chapter tag into `listings/` — no live application code stored here. |
-| `cuisineiq-rust` | Public | The application code. Simultaneously the open source product and the code readers follow along with. |
+| `t2t` | Public | Book manuscript (mdbook/Markdown), planning docs, figures. Code listings extracted from `t2t` at each chapter tag into `listings/` — no live application code stored here. |
+| `t2t` | Public | The application code. Simultaneously the open source product and the code readers follow along with. |
 | `theoria` | Public | Rust-native component explorer for Leptos (author's project, dogfooded in the book). |
 | `dokime` | Public | Rust-native component testing framework for Leptos (author's project, dogfooded in the book). |
-| `cuisineiq-commercial` | Private | Thin commercial layer only: Stripe subscription integration, billing logic, App Store deployment configs, production secrets templates. Depends on `cuisineiq-rust` as its core — a deployment wrapper, not a fork. |
+| `t2t-commercial` | Private | Thin commercial layer only: Stripe subscription integration, billing logic, App Store deployment configs, production secrets templates. Depends on `t2t` as its core — a deployment wrapper, not a fork. |
 
-### Why `cuisineiq-rust` Stands Alone
+### Why `t2t` Stands Alone
 
 The repo should stand on its own as an open source project. People who've never heard of *Trunk to Table* should be able to find it, understand what it is, and use it. The book drives people *to* the repo, but the repo shouldn't look like it only exists for the book. That's the difference between a real open source project and a "companion code" repo that nobody touches after publication.
 
@@ -733,11 +738,11 @@ tags:
 
 Tags are immutable snapshots of `main` at specific points in the book's development history — not branches. This is consistent with the MinimumCD principle of immutable artifacts, and with the trunk-based development the book teaches.
 
-`main` is the living, evolving product. It may be ahead of what the book covers, because CuisineIQ continues to develop after publication.
+`main` is the living, evolving product. It may be ahead of what the book covers, because Trunk to Table continues to develop after publication.
 
 ### README Integration
 
-The `cuisineiq-rust` README includes a section like:
+The `t2t` README includes a section like:
 
 ```markdown
 ## Following Along with Trunk to Table
@@ -752,12 +757,12 @@ To follow along from scratch, start at Chapter 1 of the book with an empty repo.
 To jump in at a specific chapter, check out the corresponding tag.
 ```
 
-### Repository Layout (`cuisineiq-rust`)
+### Repository Layout (`t2t`)
 
 Monorepo with three top-level directories, mirroring the ACD principle of everything-as-code and versioned together:
 
 ```
-cuisineiq-rust/
+t2t/
 ├── app/                          # Leptos + Axum application
 │   ├── Cargo.toml
 │   ├── src/
@@ -797,7 +802,7 @@ cuisineiq-rust/
 │       ├── deploy-staging.yml    # Deploy to staging on trunk merge
 │       └── deploy-production.yml # Deploy to production (manual gate or auto)
 ├── schema/                       # LinkML schema (single source of truth)
-│   ├── cuisineiq.yaml            # Domain model: classes, attributes, enums
+│   ├── t2t.yaml                  # Domain model: classes, attributes, enums
 │   └── generated/                # panschema output (Rust types, SQL DDL, JSON Schema)
 ├── .claude/                      # ACD agent configuration + skills
 │   └── skills/                   # /security-review, ACD workflow skills
@@ -814,8 +819,8 @@ cuisineiq-rust/
 The `t2t` repo uses mdbook (Rust) for all chapter content. The entire book toolchain is Rust-based, consistent with the book's thesis. Key tooling decisions:
 
 - **Code inclusion:** Code snippets are included from per-chapter `listings/` directories via mdbook's `{{#include ../listings/chXX/file.rs:anchor_name}}` directive. In the Rust source files, anchors are placed inside comments (`// ANCHOR: name` / `// ANCHOR_END: name`). This follows the approach used by *The Rust Programming Language* book.
-- **Per-chapter snapshots:** Each chapter's code is extracted from `cuisineiq-rust` at the corresponding chapter tag into `listings/chXX/`. This handles code that evolves across chapters — Chapter 3's `GroceryItem` and Chapter 5's `GroceryItem` can differ because they come from different snapshots.
-- **Repository linking:** `cuisineiq-rust` is linked as a git submodule under `code/cuisineiq-rust/` for reference and listing extraction. The submodule tracks `main`; a build script extracts listings from chapter tags.
+- **Per-chapter snapshots:** Each chapter's code is extracted from `t2t` at the corresponding chapter tag into `listings/chXX/`. This handles code that evolves across chapters — Chapter 3's `GroceryItem` and Chapter 5's `GroceryItem` can differ because they come from different snapshots.
+- **Repository linking:** `t2t` is linked as a git submodule under `code/t2t/` for reference and listing extraction. The submodule tracks `main`; a build script extracts listings from chapter tags.
 - **Output formats:** `mdbook build` produces both HTML (the primary, freely accessible version) and print-quality PDF via mdbook-typst-pdf (Rust-based, using the Typst typesetting engine). PDF is generated on every push in CI and attached to GitHub Releases on tag. EPUB via mdbook-epub or Pandoc conversion if needed.
 - **Admonitions:** mdbook-admonish plugin (using fork `padamson/mdbook-admonish` until upstream merges PR #235 — tracked in `dogfood-gaps.md`).
 - **Quizzes:** mdbook-quiz plugin (using fork `padamson/mdbook-quiz` until upstream merges PR #62 — tracked in `dogfood-gaps.md`).
@@ -838,13 +843,13 @@ t2t/
 │   ├── ch06-the-rest-api.md
 │   └── ...
 ├── listings/                    # Per-chapter code snapshots (Rust book style)
-│   ├── ch02/                    # Extracted from cuisineiq-rust at chapter-02 tag
+│   ├── ch02/                    # Extracted from t2t at chapter-02 tag
 │   ├── ch03/
 │   ├── ch04/
 │   ├── ch05/
 │   └── ch06/
 ├── code/
-│   └── cuisineiq-rust/          # Git submodule → cuisineiq-rust repo
+│   └── t2t/          # Git submodule → t2t repo
 ├── images/                      # Figures and diagrams
 ├── .claude/
 │   └── skills/                  # /blocker, /resume, /audit-dogfood
@@ -854,9 +859,9 @@ t2t/
 
 ### Writing Workflow
 
-During the pre-proposal and writing phases, `t2t` and `cuisineiq-rust` are developed in parallel. Each chapter draft in `t2t` corresponds to a sequence of commits in `cuisineiq-rust`. When a chapter is finished:
+During the pre-proposal and writing phases, `t2t` and `t2t` are developed in parallel. Each chapter draft in `t2t` corresponds to a sequence of commits in `t2t`. When a chapter is finished:
 
-1. The `cuisineiq-rust` repo is tagged (e.g., `chapter-03`).
+1. The `t2t` repo is tagged (e.g., `chapter-03`).
 2. Relevant source files are extracted from that tag into `listings/ch03/` with ANCHOR comments marking the includable regions.
 3. Chapter Markdown in `src/` references these listings via `{{#include ../listings/ch03/...}}`.
 4. `mdbook test` verifies all code listings compile and run.
@@ -870,25 +875,25 @@ This approach ensures each chapter shows the code as it existed at that point in
 
 ### Pre-Proposal Phase (Current)
 
-1. **Set up the pipeline first.** Create the `cuisineiq-rust` repo. GitHub Actions workflow + Terraform configs for Linode. Deploy a health-check endpoint to production before writing any application code.
+1. **Set up the pipeline first.** Create the `t2t` repo. GitHub Actions workflow + Terraform configs for Linode. Deploy a health-check endpoint to production before writing any application code.
 2. **Build the first vertical slice.** "A user can add an item to their grocery list." Leptos frontend + SQLx database, deployed through the pipeline.
 3. **Write the first ACD cycle.** Intent description → behavioral test specs → implementation → pipeline verification → deployment. This becomes the template for every subsequent chapter.
-4. **Draft Chapters 1-2 in `t2t`.** Chapter 1 (design decisions, as outlined above) and Chapter 2 (pipeline setup and hello-world deployment). Tag `cuisineiq-rust` at each chapter boundary.
+4. **Draft Chapters 1-2 in `t2t`.** Chapter 1 (design decisions, as outlined above) and Chapter 2 (pipeline setup and hello-world deployment). Tag `t2t` at each chapter boundary.
 
 ### Writing Phase
 
-Each chapter follows the ACD workflow: introduce a feature as an intent description, write behavioral test specs, implement through the pipeline, deploy. The `t2t` manuscript and `cuisineiq-rust` codebase evolve in lockstep. Each completed chapter results in a new tag in `cuisineiq-rust`.
+Each chapter follows the ACD workflow: introduce a feature as an intent description, write behavioral test specs, implement through the pipeline, deploy. The `t2t` manuscript and `t2t` codebase evolve in lockstep. Each completed chapter results in a new tag in `t2t`.
 
 ---
 
-## 9. The Broader CuisineIQ Product (Beyond the Book)
+## 9. The Broader Trunk to Table Product (Beyond the Book)
 
 The book covers the web application and REST API. The broader commercial product includes:
 
 - **Native iOS app** (Swift, consuming the REST API built in the book)
 - **Native Android app** (Kotlin, consuming the REST API built in the book)
 - **Subscription management** (Stripe integration)
-- **Open-source core** — The CuisineIQ codebase serves as a real-world open-source example of a full-stack Rust app with native mobile clients.
+- **Open-source core** — The Trunk to Table codebase serves as a real-world open-source example of a full-stack Rust app with native mobile clients.
 
 The native mobile apps and subscription features are not covered in the book but are enabled by the architecture decisions made in the book (specifically, the OpenAPI-compliant REST API).
 
@@ -941,6 +946,6 @@ The native mobile apps and subscription features are not covered in the book but
 ## 11. Open Questions
 
 - [ ] **Leptos version stability:** Leptos 0.8 is current with a path to 1.0. API has stabilized significantly but minor breaking changes still occur. Monitor for stability during writing.
-- [ ] **Licensing model:** Determine the boundary between open-source CuisineIQ core and the commercial subscription product.
+- [ ] **Licensing model:** Determine the boundary between open-source Trunk to Table core and the commercial subscription product.
 - [ ] **Linode cost for readers:** Estimate the Linode bill a reader would incur following along with the book. Keep it minimal.
 - [ ] **ACD tooling maturity:** The ACD section of MinimumCD is relatively new. Stay aligned with updates as the framework evolves.

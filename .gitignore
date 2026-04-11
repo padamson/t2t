@@ -2,12 +2,12 @@
 build/
 
 # Rust build artifacts for local tools
-tools/*/target/
+book/tools/*/target/
 
 # mdbook-quiz writes assets into src/quiz/ on every build,
 # which triggers mdbook serve rebuild loops
-src/quiz/quiz-embed.iife.js
-src/quiz/style.css
+book/src/quiz/quiz-embed.iife.js
+book/src/quiz/style.css
 
 # OS files
 .DS_Store

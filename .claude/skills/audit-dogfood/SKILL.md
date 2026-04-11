@@ -1,6 +1,6 @@
 ---
 name: audit-dogfood
-description: Review cuisineiq-rust and t2t for workarounds that should be features in author-maintained tools
+description: Review app/ and t2t for workarounds that should be features in author-maintained tools
 user-invocable: true
 disable-model-invocation: true
 argument-hint: "[optional: chapter number or file path to focus on]"
@@ -8,7 +8,7 @@ argument-hint: "[optional: chapter number or file path to focus on]"
 
 # Audit Dogfooding Gaps
 
-You are reviewing the cuisineiq-rust codebase and t2t manuscript for workarounds — places
+You are reviewing the app/ codebase and t2t manuscript for workarounds — places
 where an author-maintained tool *should* be handling something but the developer worked
 around the limitation instead. These workarounds are often invisible because the code
 works fine; the problem is that the tool isn't getting the feature request it deserves.
@@ -27,10 +27,10 @@ outside the tools' scope. Ask the user to confirm before filing issues.
 
 ## What to look for
 
-### panschema workarounds (in cuisineiq-rust)
+### panschema workarounds (in app/)
 
 1. **Hand-written Rust types that should be generated.** Check the LinkML schema at
-   `schema/cuisineiq.yaml` (or wherever it lives in cuisineiq-rust). Then grep for
+   `schema/t2t.yaml` (or wherever it lives in app/). Then grep for
    struct and enum definitions in `src/models/`, `src/services/`, and `src/api/`.
    Flag any types that:
    - Mirror a class or enum defined in the LinkML schema but aren't in the generated output
@@ -48,7 +48,7 @@ outside the tools' scope. Ask the user to confirm before filing issues.
 5. **Any `// TODO`, `// HACK`, `// WORKAROUND` comments** mentioning schemas,
    types, generation, or panschema.
 
-### playwright-rust workarounds (in cuisineiq-rust)
+### playwright-rust workarounds (in app/)
 
 1. **Raw JavaScript evaluation** (`evaluate`, `evaluate_handle`) used where a native
    playwright-rust API should exist.
@@ -61,7 +61,7 @@ outside the tools' scope. Ask the user to confirm before filing issues.
 4. **Any `// TODO`, `// HACK`, `// WORKAROUND` comments** mentioning playwright,
    browser, or E2E testing.
 
-### theoria workarounds (in cuisineiq-rust)
+### theoria workarounds (in app/)
 
 1. **Inline component demos** in regular app routes instead of in the component explorer.
    Components should be registered in theoria with configurable props.
@@ -96,8 +96,8 @@ outside the tools' scope. Ask the user to confirm before filing issues.
 1. **Read the current state.** Read `dogfood-gaps.md`, the LinkML schema, and `book.toml`.
 
 2. **Scan the codebase.** Use Grep and Glob systematically:
-   - `Grep` for `struct `, `enum `, `impl From`, `impl Into` in cuisineiq-rust `src/`
-   - `Grep` for `TODO`, `HACK`, `WORKAROUND`, `panschema`, `playwright` in cuisineiq-rust
+   - `Grep` for `struct `, `enum `, `impl From`, `impl Into` in app/ `src/`
+   - `Grep` for `TODO`, `HACK`, `WORKAROUND`, `panschema`, `playwright` in app/
    - `Grep` for `evaluate(`, `evaluate_handle(` in `tests/e2e/`
    - `Glob` for `migrations/*.sql` and compare against generated DDL
    - `Grep` for `<!-- TODO`, `<!-- HACK`, `<!-- WORKAROUND` in t2t `src/`

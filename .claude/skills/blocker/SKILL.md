@@ -9,8 +9,8 @@ argument-hint: "<tool-name> <description of what's missing>"
 # Log a Dogfooding Blocker
 
 You are helping an author who is simultaneously writing a book (Trunk to Table)
-and developing several tools it depends on. When the book, CuisineIQ app,
-or book toolchain needs a feature or fix that doesn't exist yet, this skill
+and developing several tools it depends on. When the book, app,
+or toolchain needs a feature or fix that doesn't exist yet, this skill
 tracks the blocker and sets up the contribution path.
 
 There are two categories of blocker:
@@ -20,7 +20,7 @@ There are two categories of blocker:
    the fix upstream via PR. The fork is used until upstream merges.
 
 IMPORTANT: Public issues and PRs in any repo must stand on their own as generic
-requests. Do not reference "Trunk to Table", chapter numbers, or CuisineIQ
+requests. Do not reference "Trunk to Table", chapter numbers, or the app
 in public repos. Book-specific context goes only in the t2t tracking issue.
 
 ## Known tools
@@ -52,7 +52,7 @@ If the tool isn't in either list, ask the user for the GitHub repo path.
    - Whether an existing upstream issue or PR already addresses this
    - Acceptance criteria: how would you know the feature is done?
 
-   Read relevant files in the t2t and code/cuisineiq-rust repos to build context.
+   Read relevant files in the t2t and code/app/ repos to build context.
    If the user provided a description as $ARGUMENTS, use that as the starting point
    but ask clarifying questions if needed.
 
@@ -182,7 +182,7 @@ If the tool isn't in either list, ask the user for the GitHub repo path.
 
      - **Chapter:** [chapter number and name]
      - **What we were building:** [feature or section]
-     - **Related code:** [file paths in cuisineiq-rust or t2t]
+     - **Related code:** [file paths in app/ or t2t]
 
      ## Fork details (third-party only)
 

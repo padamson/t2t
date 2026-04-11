@@ -5,6 +5,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 Version scheme: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for small edits and fixes. `v1.0.0` marks the complete first edition. Each tagged version triggers a GitHub Release with a downloadable PDF.
 
+## [v0.1.4] - 2026-04-11
+
+### Changed
+- Unified monorepo: app and book in one repo (app/ + book/)
+- Renamed "CuisineIQ" to "Trunk to Table" throughout
+- Removed cuisineiq-rust submodule; app code lives in app/
+- Book content moved from repo root to book/ subdirectory
+- Skills renamed with scope prefix (book-pre-commit-review, book-extract-listings)
+- CI workflow updated for monorepo structure
+
+### Added
+- cargo-vet for supply chain vetting with trusted audit imports
+- SLSA provenance attestation on release artifacts
+- Scheduled weekly security workflow
+- Private key detection in pre-commit hooks
+- prek added to toolchain and greenfield checklist
+
+### Removed
+- cuisineiq-rust submodule
+- listings/ directory (chapters include directly from app/src/)
+
 ## [v0.1.3] - 2026-03-31
 
 ### Added
@@ -47,6 +68,7 @@ Version scheme: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for
 - Structured logging (tracing) and error handling (thiserror) added to chapter progression
 - Dogfood blocker tracking for third-party tools (mdbook-admonish, mdbook-quiz)
 
+[v0.1.4]: https://github.com/padamson/t2t/compare/v0.1.3...v0.1.4
 [v0.1.3]: https://github.com/padamson/t2t/compare/v0.1.2...v0.1.3
 [v0.1.2]: https://github.com/padamson/t2t/compare/v0.1.1...v0.1.2
 [v0.1.1]: https://github.com/padamson/t2t/compare/v0.1.0...v0.1.1

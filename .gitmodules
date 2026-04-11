@@ -1,3 +1,0 @@
-[submodule "code/cuisineiq-rust"]
-	path = code/cuisineiq-rust
-	url = git@github.com:padamson/cuisineiq-rust.git

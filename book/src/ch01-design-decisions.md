@@ -54,6 +54,8 @@ The pipeline enforces quality gates from commit one. Ours maps to the Rust toolc
 
 **Supply chain policy: `cargo-deny`.** License compliance, crate source vetting, and duplicate dependency detection. This is the difference between "we use open source" and "we know exactly what open source we use, where it comes from, and what licenses we're agreeing to."
 
+**Supply chain vetting: `cargo-vet`.** `cargo-deny` checks policy; `cargo-vet` checks provenance. It imports trusted audit sets from organizations like Mozilla, Google, and ISRG, then verifies that every dependency in your tree has been audited by someone you trust. When you add a new crate, `cargo-vet` tells you whether it's been reviewed and by whom. New, unvetted dependencies require explicit exemption.
+
 **Mutation testing: `cargo-mutants`.** Your tests prove the code works, but do they actually catch bugs? `cargo-mutants` systematically modifies your code, replacing `+` with `-`, deleting function bodies, changing return values, and making other "mutations" while checking whether your tests notice. A surviving mutant is a line of code you can break without any test failing thus revealing a gap in your safety net. The pipeline runs `cargo mutants --in-diff` on every push, mutation-testing only the changed code. A full mutation sweep runs nightly to catch accumulated gaps.
 
 **Automated dependency updates: Dependabot.** Configured at project creation. When a dependency publishes a security fix, you get a PR within hours. No human has to remember to check.
@@ -78,7 +80,7 @@ The two layers complement each other. The local review catches things static too
 
 ### The Testing Pyramid
 
-Every test in CuisineIQ is Rust code. Behavioral specifications are test functions: a test named `user_can_add_item_to_grocery_list()` is both the spec and the verification. When the agent reads it, it knows what to implement. When the pipeline runs it, it knows whether the implementation is correct.
+Every test in Trunk to Table is Rust code. Behavioral specifications are test functions: a test named `user_can_add_item_to_grocery_list()` is both the spec and the verification. When the agent reads it, it knows what to implement. When the pipeline runs it, it knows whether the implementation is correct.
 
 The pyramid has nine layers, each serving a different purpose and running at a different speed:
 
@@ -152,7 +154,7 @@ Other ecosystems have partially solved this. Prisma gives TypeScript developers 
 
 The ACD framework requires that architecture be represented as versioned delivery artifacts. For data modeling, this means the schema should be the source of truth, not the Rust code, not the SQL, not the OpenAPI spec.
 
-We define the CuisineIQ domain model once, in [LinkML](https://linkml.io/), a YAML-based modeling language designed for exactly this purpose. Classes, attributes, enums, and relationships. All in one place:
+We define the Trunk to Table domain model once, in [LinkML](https://linkml.io/), a YAML-based modeling language designed for exactly this purpose. Classes, attributes, enums, and relationships. All in one place:
 
 ```yaml
 classes:
@@ -196,7 +198,7 @@ The theme is the same at every layer: **catch inconsistencies at build time, not
 
 ## Why This Architecture?
 
-CuisineIQ needs to serve two kinds of clients:
+Trunk to Table needs to serve two kinds of clients:
 
 1. **A web frontend** for desktop and mobile browsers, server-rendered HTML with client-side interactivity.
 2. **A REST API** for native mobile apps (iOS and Android, built separately, not covered in this book).
@@ -257,11 +259,12 @@ Every technology choice in this book maps back to a Continuous Delivery constrai
 | **cargo-mutants** | Tests must demonstrate they catch regressions. Code coverage measures what runs; mutation testing measures what's *verified*. Incremental on every push; full sweep on a schedule. |
 | **panschema + LinkML** | The data model is a versioned architecture artifact. The pipeline generates and verifies all downstream representations. |
 | **cargo-deny** | Supply chain policy as code. License compliance, crate source vetting, and duplicate detection are pipeline gates, not afterthoughts. |
+| **cargo-vet** | Supply chain vetting with trusted audit imports. Every dependency verified by someone you trust (Mozilla, Google, ISRG). New, unvetted dependencies require explicit exemption. |
 | **Dependabot + GitHub Security** | Automated dependency updates and static analysis. Security scanning that doesn't depend on developer memory. |
 | **prek** (pre-commit hooks) | Local hooks mirror CI checks. Catch formatting, lint, and security issues in seconds before pushing, keeping the pipeline green. Rust-native, reads the industry-standard `.pre-commit-config.yaml`. |
 | **Podman + compose.yaml** | The local PostgreSQL runs in a container matching the production version. No environment divergence. |
 | **VS Code Devcontainer** | One-click setup gives every reader the same environment. No "works on my machine" debugging. |
-| **Tailwind CSS v4** | Utility-first CSS with a Rust-native standalone CLI. Component styles are Leptos components composing Tailwind utilities. No third-party CSS framework, no Node.js dependency. The CuisineIQ theme is a versioned artifact. |
+| **Tailwind CSS v4** | Utility-first CSS with a Rust-native standalone CLI. Component styles are Leptos components composing Tailwind utilities. No third-party CSS framework, no Node.js dependency. The Trunk to Table theme is a versioned artifact. |
 | **theoria** | A component catalog where you browse, configure, and document every UI component in isolation. Ensures components are reusable and well-documented as the project grows. |
 | **dokime** | Fast component-level testing without a full browser. Verifies rendering and signal reactivity for every component theoria catalogs. Catches regressions without the overhead of E2E tests. |
 | **tracing** | Structured logging from day one. The pipeline verifies code is correct at build time; `tracing` shows what's happening at runtime. You can't do canary deployments without observability to compare. |
@@ -269,11 +272,11 @@ Every technology choice in this book maps back to a Continuous Delivery constrai
 
 ## Why Component-Driven?
 
-CuisineIQ has two main UI surfaces: grocery lists and a recipe editor with live preview. Without a deliberate approach to UI, every chapter would reinvent button styles, form layouts, and spacing. The result would be a codebase where no two pages look the same.
+Trunk to Table has two main UI surfaces: grocery lists and a recipe editor with live preview. Without a deliberate approach to UI, every chapter would reinvent button styles, form layouts, and spacing. The result would be a codebase where no two pages look the same.
 
 We build the UI from composable Leptos components from the start. A Button component introduced in [The Web Frontend](./ch04-the-web-frontend.md) is the same Button used in [Recipe Creation](./ch10-recipe-creation.md). A Card component that displays a grocery item also displays a recipe. The components are small, reusable, and tested in isolation.
 
-[Tailwind CSS v4](https://tailwindcss.com) provides the styling foundation. Its standalone CLI is written in Rust (using Lightning CSS), so it requires no Node.js runtime. Tailwind scans your Leptos `view!` macros for class names and generates only the CSS you actually use. We define a CuisineIQ theme (color palette, typography scale, spacing tokens) in Tailwind's configuration, then compose those utilities inside Leptos components. A `Button` component isn't a CSS class name; it's a Rust function that encapsulates a specific combination of Tailwind utilities, accepts typed props (`variant`, `size`, `disabled`), and renders consistently everywhere it's used.
+[Tailwind CSS v4](https://tailwindcss.com) provides the styling foundation. Its standalone CLI is written in Rust (using Lightning CSS), so it requires no Node.js runtime. Tailwind scans your Leptos `view!` macros for class names and generates only the CSS you actually use. We define a Trunk to Table theme (color palette, typography scale, spacing tokens) in Tailwind's configuration, then compose those utilities inside Leptos components. A `Button` component isn't a CSS class name; it's a Rust function that encapsulates a specific combination of Tailwind utilities, accepts typed props (`variant`, `size`, `disabled`), and renders consistently everywhere it's used.
 
 This approach keeps the entire build chain Rust-native and eliminates a third-party CSS framework from the dependency tree. The component styles are *yours*, defined in your codebase, tested by your pipeline.
 
@@ -306,13 +309,13 @@ And then there's the convergence that makes this book timely: **AI coding assist
 
 ## What You're Going to Build
 
-CuisineIQ is a grocery list and recipe management application. We chose this domain because:
+Trunk to Table is a grocery list and recipe management application. We chose this domain because:
 
 - **It's universally understood.** Everyone has made a grocery list. No time spent explaining the problem space means more time on engineering.
 - **It's not trivial.** Authentication, shared state (household lists), relational data (recipes, ingredients, grocery items), and enough UI complexity to exercise every layer of the stack.
 - **It decomposes into natural vertical slices.** Add an item. Check it off. Create a recipe. Generate a grocery list from recipes. Each feature is independently deployable, exactly what CD demands.
 
-By the end of this book, CuisineIQ will support:
+By the end of this book, Trunk to Table will support:
 
 - **Grocery lists.** Create, edit, and share lists within a household. Add items manually or generate them from recipes. Check items off, uncheck them, archive completed lists.
 - **Recipes.** Create and edit recipes with a live preview in the editor. Each recipe has ingredients (with quantities and units), instructions, and metadata. The recipe editor shows formatted output as you type, exercising Leptos's fine-grained reactivity.
@@ -350,6 +353,9 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 
 - [ ] `cargo-audit` scans dependencies for known CVEs on every build *(Ch 2)*
 - [ ] `cargo-deny` enforces supply chain policy (licenses, sources, duplicates) *(Ch 2)*
+- [ ] `cargo-vet` vets dependencies against trusted audit sets *(Ch 2)*
+- [ ] Scheduled weekly security workflow runs cargo-audit, cargo-deny, cargo-vet *(Ch 2)*
+- [ ] Release artifacts include SLSA provenance attestation *(Ch 2)*
 - [ ] Dependabot is configured for automated dependency update PRs *(Ch 2)*
 - [ ] GitHub code scanning (SAST) and secret scanning are enabled *(Ch 2)*
 - [ ] Secrets are managed via environment variables and GitHub Secrets, never committed *(Ch 2)*

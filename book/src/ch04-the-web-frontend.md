@@ -2,7 +2,7 @@
 
 <!-- The reader builds: -->
 <!-- - Base Leptos components: Button, Input, Card, Layout -->
-<!-- - CuisineIQ theme from Tailwind v4 primitives -->
+<!-- - Trunk to Table theme from Tailwind v4 primitives -->
 <!-- - Component explorer route via theoria -->
 <!-- - Component tests via dokime -->
 <!-- - Grocery list page rendering items from the database via #[server] function -->
