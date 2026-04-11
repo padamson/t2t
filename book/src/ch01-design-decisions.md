@@ -321,38 +321,91 @@ And then there's the convergence that makes this book timely: **AI coding assist
 
 ## What You're Going to Build
 
-Scimantic is a scientific knowledge management platform. We chose this domain because:
+Scimantic is a scientific knowledge management platform — think [Indico](https://getindico.io/) (CERN's conference management system) but for the scientific workflow itself. It's open-source software that researchers can self-host, and it's also offered as a paid hosted service for individuals and organizations who'd rather not run their own infrastructure.
+
+We chose this domain because:
 
 - **It's distinctive.** There is no existing "build a scientific knowledge graph in Rust" book. The domain exercises capabilities (ontologies, RDF, SPARQL, dual databases, graph traversal) that a generic CRUD app never touches. If you finish this book, you will have built something no tutorial has covered before.
 - **It deeply exercises the stack.** A knowledge graph demands complex relationships, graph queries, ontology validation, and dual-database coordination. Every layer of the architecture earns its keep. The schema-driven approach isn't a nice-to-have; it's essential when your data model is an ontology.
-- **It decomposes into natural vertical slices.** Pose a question. Link evidence. Form a hypothesis. Design an experiment. Record results. Each entity in the scientific workflow is independently deployable, exactly what CD demands.
+- **It decomposes into natural vertical slices.** Each user story maps to a thin, independently deployable increment — exactly what CD demands.
 - **The author is a scientist.** This isn't a contrived teaching example. It's a tool the author will use in their own research. That alignment between dogfooding and career means the domain gets the depth it deserves.
+- **It's a real product.** By the end of this book, Scimantic is deployed, usable, and serving real researchers. The open-source core is the codebase readers build. A thin commercial layer (hosting, billing) sits on top but is outside the book's scope.
 
-By the end of this book, Scimantic will support:
+### The Product Vision
 
-- **Questions.** Pose research questions, tag them with scientific domains, and track their status from open through investigating to resolved. Questions are the starting point of every inquiry in the knowledge graph.
-- **Evidence.** Link literature references, datasets, and observations to questions. Evidence accumulates over time, forming the empirical foundation that supports or challenges your thinking. Each piece of evidence carries provenance: where it came from, when it was added, and which questions it addresses.
-- **Hypotheses.** Form testable hypotheses from accumulated evidence. A hypothesis connects to the evidence that motivated it and the questions it aims to answer. The knowledge graph captures these relationships, letting you trace any hypothesis back to its evidentiary roots.
-- **Experiments.** Design experiments to test hypotheses. Track methodology, parameters, and expected outcomes. An experiment is linked to the hypothesis it tests, making the full chain from question to experimental design navigable.
-- **Results.** Record experimental outcomes and link them back to hypotheses. Results either support or refute hypotheses, and the knowledge graph captures this verdict. Over time, the graph becomes a navigable history of your research: which questions led to which hypotheses, which experiments tested them, and what the data showed.
-- **Knowledge graph.** Oxigraph stores the scientific entities and all relationships between them as RDF triples, queryable via SPARQL. PostgreSQL stores application state: users, sessions, and configuration. The dual-database architecture is invisible to the user; the service layer handles routing queries to the right store.
-- **User authentication.** Session-based auth, authorization logic for who can see and edit what.
+Scimantic helps researchers manage the full lifecycle of scientific inquiry. The core workflow follows the scientific method:
 
-The first vertical slice, "a user can pose a research question," takes six chapters. That's where we build the full stack and complete the first ACD workflow cycle. Evidence, hypotheses, experiments, results, and the knowledge graph queries that tie them together come in later chapters, building on that foundation. Each feature adds faster because the scaffolding (in the codebase and in your understanding) is already in place.
+1. **Pose a question.** What do you want to know?
+2. **Gather evidence.** What data, literature, and observations bear on the question?
+3. **Form a hypothesis.** Given the evidence, what testable prediction can you make?
+4. **Design an experiment.** How will you test the hypothesis?
+5. **Record results.** What did the experiment show, and does it support or refute the hypothesis?
 
-### The Scientific Workflow as a Chapter Map
+Each step produces an entity in a knowledge graph. The relationships between entities — which evidence supports which hypothesis, which experiment tests which hypothesis, which results confirm or contradict — are first-class data, stored as RDF triples and queryable via SPARQL. Over time, a researcher's Scimantic instance becomes a navigable history of their scientific thinking.
 
-The chapters in Part II follow the scientific workflow itself:
+### User Stories
 
-| Chapter | Entity | What the user can do |
-|---------|--------|---------------------|
-| [Evidence](./ch07-evidence.md) | Evidence | Link literature, data, and observations to questions |
-| [User Authentication](./ch08-user-authentication.md) | Users | Log in, own their research, control access |
-| [Hypotheses](./ch09-hypotheses.md) | Hypothesis | Form testable hypotheses from accumulated evidence |
-| [Experiments](./ch10-experiments.md) | Experiment | Design experiments to test hypotheses, track methodology |
-| [Results & Analysis](./ch11-results-and-analysis.md) | Result | Record outcomes, link back to hypotheses, traverse the full graph |
+These are the user stories we'll build through the course of the book. Each story is a vertical slice: independently deployable, testable end-to-end, and valuable on its own.
 
-Each chapter adds the next entity, the next set of relationships in the knowledge graph, and the next set of SPARQL queries. By the end, the user can navigate from any question to the experiments that tested it and the results those experiments produced.
+**Questions (Part I — The First Vertical Slice)**
+
+- *As a researcher, I want to pose a research question so that I can begin a structured inquiry.*
+- *As a researcher, I want to tag questions with scientific domains so that I can organize my work.*
+- *As a researcher, I want to track a question's status (open → investigating → resolved) so that I can see which inquiries are active.*
+
+**Evidence (Ch 7)**
+
+- *As a researcher, I want to link a literature reference to a question so that I can track what I've read.*
+- *As a researcher, I want to link a dataset or observation to a question so that empirical data is connected to the inquiry it informs.*
+- *As a researcher, I want to see all evidence for a question so that I can assess whether I have enough to form a hypothesis.*
+
+**User Authentication (Ch 8)**
+
+- *As a researcher, I want to create an account and log in so that my work is private and persistent.*
+- *As a researcher, I want to control who can view or edit my questions and evidence so that I can collaborate selectively.*
+
+**Hypotheses (Ch 9)**
+
+- *As a researcher, I want to form a hypothesis linked to supporting evidence so that my reasoning is traceable.*
+- *As a researcher, I want to see the evidence chain behind any hypothesis so that I can evaluate its foundation.*
+- *As a researcher, I want to collaborate on hypotheses with other researchers in real time.*
+
+**Experiments (Ch 10)**
+
+- *As a researcher, I want to design an experiment linked to a hypothesis so that I can plan how to test it.*
+- *As a researcher, I want to record methodology, variables, and expected outcomes so that the experiment is reproducible.*
+- *As a researcher, I want to track an experiment's status (planned → in-progress → completed) so that I know what's running.*
+
+**Results & Analysis (Ch 11)**
+
+- *As a researcher, I want to record experimental results and link them to the hypothesis they tested so that the outcome is part of the knowledge graph.*
+- *As a researcher, I want to mark whether results support or refute a hypothesis so that the graph captures verdicts.*
+- *As a researcher, I want to trace the full path from question to result so that I can see the complete arc of an inquiry.*
+
+### From User Stories to Vertical Slices
+
+Each group of user stories maps to a chapter, and each chapter delivers a deployable increment:
+
+| Chapter | Slice | User stories | What ships |
+|---------|-------|-------------|------------|
+| Ch 2–6 | **Questions** | Pose, tag, track status | Full stack: pipeline, database, UI, REST API, E2E tests |
+| Ch 7 | **Evidence** | Link literature/data, view per-question | Second entity, first graph relationships, SPARQL queries |
+| Ch 8 | **Authentication** | Sign up, log in, access control | Session auth, route protection, authorization |
+| Ch 9 | **Hypotheses** | Form, trace evidence chain, collaborate | Multi-hop graph queries, real-time updates |
+| Ch 10 | **Experiments** | Design, track methodology, status workflow | Complex forms, state machines, cross-entity queries |
+| Ch 11 | **Results** | Record, link to hypothesis, full traversal | Both databases bridged, aggregation, benchmarks |
+| Ch 12–14 | **Production hardening** | — | Security, feature flags, progressive rollout |
+
+The first vertical slice — "a researcher can pose a question" — takes six chapters. That's not slow; that's thorough. Those six chapters build the entire stack: pipeline, dual database, web frontend, E2E tests, REST API. Every subsequent slice builds faster because the scaffolding is in place.
+
+### The Knowledge Graph
+
+Two databases serve different purposes:
+
+- **Oxigraph** stores the scientific entities and all relationships between them as RDF triples, queryable via SPARQL. This is the knowledge graph — the thing that makes Scimantic more than a CRUD app.
+- **PostgreSQL** stores application state: users, sessions, and configuration. This is the infrastructure that makes Scimantic a product.
+
+The dual-database architecture is invisible to the user; the service layer handles routing queries to the right store.
 
 ```admonish info title="Architecture Decision Records"
 Some teams document decisions like the ones in this chapter using Architecture Decision Records (ADRs). These are short markdown files with a Status, Context, Decision, and Consequences section, stored in the repo under `docs/adr/`. It's a widely adopted practice (ThoughtWorks has recommended it since 2016) and the format is useful: six months later, nobody remembers *why* SQLite was rejected, and the ADR captures that. The risk is that ADRs rot. Teams write them enthusiastically for a month, then stop, and stale ADRs mislead more than they help. In this book, the chapters themselves serve as our decision record. Every technology choice has its rationale right here in the narrative. If you adopt ADRs in your own projects, keep them short, update them when decisions change, and delete them when they're no longer relevant.
