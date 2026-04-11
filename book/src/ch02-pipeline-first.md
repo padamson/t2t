@@ -52,19 +52,22 @@
 <!-- ============================================================ -->
 
 <!-- The reader builds: -->
-<!-- - Initial LinkML schema for GroceryItem and ItemStatus -->
-<!-- - panschema generating Rust types and SQL DDL from the schema -->
+<!-- - Initial LinkML schema for Question and QuestionStatus -->
+<!-- - panschema generating Rust types, SQL DDL, and SHACL shapes from the schema -->
 <!-- - Generated types compile and are used by the health-check handler -->
+<!-- - scimantic-ontology repo set up as a versioned dependency -->
 
 <!-- The reader learns: -->
 <!-- - LinkML basics: classes, attributes, enums, relationships in YAML -->
+<!-- - RDF/ontology basics: why knowledge graphs use URIs, triples, and SHACL shapes -->
 <!-- - panschema basics: install CLI, run `panschema generate`, read the generated code -->
 <!-- - The generated code is idiomatic Rust, not opaque output -->
 <!-- - Schema-driven development: the pipeline will regenerate and verify on every push -->
+<!-- - Ontology as an architecture artifact: versioned in a separate repo, consumed by the app -->
 
 <!-- Checkpoint: `cargo build` passes with generated types from the schema -->
 <!-- Greenfield checklist items checked off: -->
-<!--   - LinkML schema is versioned in the repo; panschema generates types and migrations in CI -->
+<!--   - LinkML schema is versioned; panschema generates types, migrations, and SHACL shapes in CI -->
 
 <!-- ============================================================ -->
 <!-- PHASE 4: CI Pipeline -->

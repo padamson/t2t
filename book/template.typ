@@ -1,4 +1,4 @@
-// Trunk to Table — custom typst template for print-quality PDF
+// Trunk to Theory — custom typst template for print-quality PDF
 //
 // Uses open-source fonts (installed via brew on macOS, apt on Linux/CI).
 // macOS system fonts listed as fallbacks for environments without brew fonts.

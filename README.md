@@ -1,8 +1,10 @@
-# Trunk to Table
+# Trunk to Theory
 
 *Building a Full-Stack Rust Application with Agentic Continuous Delivery*
 
 An open-source book and application. The book documents the complete process of building a full-stack Rust web application from scratch, structured around Agentic Continuous Delivery practices from [MinimumCD](https://minimumcd.org).
+
+The application is a scientific knowledge management platform based on scimantic concepts — pose research Questions, gather Evidence, form Hypotheses, design Experiments, and record Results — powered by a dual-database architecture (Oxigraph knowledge graph + PostgreSQL app state).
 
 **Read the book:** [padamson.github.io/t2t](https://padamson.github.io/t2t)
 
@@ -62,6 +64,7 @@ Tags follow semver: `v0.x.0` for new chapters or significant revisions, `v0.x.y`
 | Repo | Role |
 |------|------|
 | [panschema](https://github.com/padamson/panschema) | Schema-driven development CLI |
+| [scimantic-ontology](https://github.com/padamson/scimantic-ontology) | LinkML schema for the scimantic domain |
 | [playwright-rust](https://github.com/padamson/playwright-rust) | E2E testing framework |
 | [theoria](https://github.com/padamson/theoria) | Component explorer for Leptos |
 | [dokime](https://github.com/padamson/dokime) | Component testing for Leptos |

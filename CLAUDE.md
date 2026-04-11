@@ -1,4 +1,4 @@
-# Trunk to Table
+# Trunk to Theory
 
 A full-stack Rust web application with an open-source book documenting its development through Agentic Continuous Delivery practices.
 
@@ -24,6 +24,10 @@ See `README.md` for install instructions. All Rust-based:
 
 See `book/book-plan.md` Section 4 (Technology Stack) for the full stack. The book chapters are the authoritative documentation for every tool choice and its rationale.
 
+## Domain
+
+Scientific knowledge management based on scimantic concepts. Core entities follow the scientific workflow: Questions → Evidence → Hypotheses → Experiments → Results. Dual database architecture: Oxigraph (Rust-native RDF triple store) for the knowledge graph + PostgreSQL for app state (users, sessions). The scimantic ontology lives in a separate repo (`padamson/scimantic-ontology`).
+
 ## Code inclusion
 
 Chapters reference app source directly via `{{#include ../../app/src/file.rs:anchor}}` with ANCHOR comments. No separate listings directory. The monorepo is tagged at chapter boundaries.
@@ -32,7 +36,7 @@ Chapters reference app source directly via `{{#include ../../app/src/file.rs:anc
 
 - **Monorepo.** A PR that adds a feature updates both `app/` and `book/src/` in the same commit.
 - **No book references in public tool repos.** Public feature requests created by `/blocker` must stand on their own.
-- **Schema-driven development.** Data model in LinkML YAML (`schema/t2t.yaml`); panschema generates types, SQL, JSON Schema.
+- **Schema-driven development.** Data model in LinkML YAML; panschema generates types, SQL DDL, SHACL shapes, JSON Schema. The scimantic ontology (`padamson/scimantic-ontology`) is the authoritative schema source.
 - **Rust-only toolchain.** Fork/fix/contribute rather than switching to non-Rust alternatives.
 - **Versioning.** Semver tags: `v0.x.0` for chapters/revisions, `v0.x.y` for fixes, `v1.0.0` for first edition. See `CHANGELOG.md`.
 
@@ -41,6 +45,7 @@ Chapters reference app source directly via `{{#include ../../app/src/file.rs:anc
 | Repo | Visibility | Role |
 |---|---|---|
 | `padamson/t2t` | Public | This repo |
+| `padamson/scimantic-ontology` | Public | LinkML schema for the scimantic domain |
 | `padamson/panschema` | Public | Schema-driven dev tool (dogfooded) |
 | `padamson/playwright-rust` | Public | E2E testing framework (dogfooded) |
 | `padamson/theoria` | Public | Component explorer for Leptos (dogfooded) |

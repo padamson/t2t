@@ -2,10 +2,10 @@
 
 <!-- The reader builds: -->
 <!-- - Base Leptos components: Button, Input, Card, Layout -->
-<!-- - Trunk to Table theme from Tailwind v4 primitives -->
+<!-- - Trunk to Theory theme from Tailwind v4 primitives -->
 <!-- - Component explorer route via theoria -->
 <!-- - Component tests via dokime -->
-<!-- - Grocery list page rendering items from the database via #[server] function -->
+<!-- - Questions board page rendering questions from the database via #[server] function -->
 
 <!-- The reader learns: -->
 <!-- - Leptos: SSR, hydration, WASM compilation, cargo-leptos dual-target build -->

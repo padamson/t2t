@@ -115,14 +115,14 @@ outside the tools' scope. Ask the user to confirm before filing issues.
    ## Audit Results
 
    ### Likely panschema gaps
-   1. `src/models/grocery_item.rs:15` — Hand-written `GroceryItem` struct with
-      `#[derive(FromRow, ToSchema)]`. The LinkML schema defines `GroceryItem`
+   1. `src/models/question.rs:15` — Hand-written `Question` struct with
+      `#[derive(FromRow, ToSchema)]`. The LinkML schema defines `Question`
       but panschema doesn't generate `FromRow` derives yet.
       -> Existing issue? No
       -> Recommendation: /blocker panschema "Generate FromRow derives"
 
    ### Likely playwright-rust gaps
-   1. `tests/e2e/grocery_test.rs:42` — Uses `page.evaluate("document.querySelector...")`.
+   1. `tests/e2e/question_test.rs:42` — Uses `page.evaluate("document.querySelector...")`.
       -> Might be a usage issue, not a tool gap. Ask user.
 
    ### Likely mdbook toolchain gaps

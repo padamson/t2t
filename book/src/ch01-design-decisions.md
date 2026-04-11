@@ -80,7 +80,7 @@ The two layers complement each other. The local review catches things static too
 
 ### The Testing Pyramid
 
-Every test in Trunk to Table is Rust code. Behavioral specifications are test functions: a test named `user_can_add_item_to_grocery_list()` is both the spec and the verification. When the agent reads it, it knows what to implement. When the pipeline runs it, it knows whether the implementation is correct.
+Every test in Trunk to Theory is Rust code. Behavioral specifications are test functions: a test named `user_can_pose_research_question()` is both the spec and the verification. When the agent reads it, it knows what to implement. When the pipeline runs it, it knows whether the implementation is correct.
 
 The pyramid has nine layers, each serving a different purpose and running at a different speed:
 
@@ -134,7 +134,7 @@ The key ACD principles governing every chapter:
 - **Consistency between intent, tests, implementation, and architecture is enforced.** The pipeline verifies this. It's not a matter of discipline.
 - **While the pipeline is red, agents may only generate changes restoring pipeline health.** No new features until the build is green.
 
-You'll execute the full ACD workflow for the first time in [Completing the Slice](./ch05-completing-the-slice.md), when we build the "add a grocery item" feature end-to-end. But the pipeline and constraints are in place from [Pipeline First](./ch02-pipeline-first.md).
+You'll execute the full ACD workflow for the first time in [Completing the Slice](./ch05-completing-the-slice.md), when we build the "pose a research question" feature end-to-end. But the pipeline and constraints are in place from [Pipeline First](./ch02-pipeline-first.md).
 
 ## Why Schema-Driven?
 
@@ -154,37 +154,42 @@ Other ecosystems have partially solved this. Prisma gives TypeScript developers 
 
 The ACD framework requires that architecture be represented as versioned delivery artifacts. For data modeling, this means the schema should be the source of truth, not the Rust code, not the SQL, not the OpenAPI spec.
 
-We define the Trunk to Table domain model once, in [LinkML](https://linkml.io/), a YAML-based modeling language designed for exactly this purpose. Classes, attributes, enums, and relationships. All in one place:
+Trunk to Theory's domain model has two homes. The scientific ontology — the classes, relationships, and constraints that define what a Question, Evidence, Hypothesis, Experiment, and Result *are* — lives in the [scimantic-ontology](https://github.com/padamson/scimantic-ontology) repo as a versioned [LinkML](https://linkml.io/) schema. The application data model (users, sessions, app configuration) lives in the main repo. Both are YAML-based, and both flow through the same tool.
+
+Here's what a core entity looks like in LinkML:
 
 ```yaml
 classes:
-  GroceryItem:
+  Question:
     attributes:
       id:
-        range: integer
+        range: uri
         identifier: true
-      name:
+      text:
         range: string
         required: true
       status:
-        range: ItemStatus
+        range: QuestionStatus
         required: true
+      domain:
+        range: string
 
 enums:
-  ItemStatus:
+  QuestionStatus:
     permissible_values:
-      pending: {}
-      purchased: {}
-      archived: {}
+      open: {}
+      investigating: {}
+      resolved: {}
 ```
 
-From this single source, [panschema](https://github.com/padamson/panschema) generates:
+From these schemas, [panschema](https://github.com/padamson/panschema) generates:
 
 - **Rust structs** with the appropriate `serde`, `sqlx`, and `utoipa` derives.
-- **SQL DDL** for database migrations.
+- **SQL DDL** for database migrations (PostgreSQL tables for app state).
 - **JSON Schema** for API contract validation.
+- **SHACL shapes** for validating RDF data in the knowledge graph.
 
-When the schema changes, the pipeline regenerates all downstream artifacts and verifies consistency. If the generated Rust types don't match the SQL migrations, the build breaks. If the JSON Schema doesn't match the API response types, the build breaks. Inconsistency is caught at build time, not in production.
+When the schema changes, the pipeline regenerates all downstream artifacts and verifies consistency. If the generated Rust types don't match the SQL migrations, the build breaks. If the SHACL shapes don't match the ontology, the build breaks. If the JSON Schema doesn't match the API response types, the build breaks. Inconsistency is caught at build time, not in production.
 
 ### Why Not Just Hand-Write Everything?
 
@@ -192,16 +197,16 @@ You could. Many excellent Rust applications do. But consider the trajectory of t
 
 - **SQLx** already does this for queries: it checks column names and types at compile time. Nobody hand-verifies `SELECT` results against struct fields.
 - **utoipa** does the same for API contracts: your OpenAPI spec is generated from Rust types, not maintained in a separate file.
-- **panschema** extends this to the data model itself. The Rust types, SQL DDL, and JSON Schema are all generated from one LinkML definition. The pipeline verifies consistency across all three.
+- **panschema** extends this to the data model itself. The Rust types, SQL DDL, SHACL shapes, and JSON Schema are all generated from one LinkML definition. The pipeline verifies consistency across all of them.
 
 The theme is the same at every layer: **catch inconsistencies at build time, not in production.** Schema-driven development is a natural extension of the same philosophy that makes SQLx and utoipa compelling. It's Rust's build-time verification story applied to the data model itself.
 
 ## Why This Architecture?
 
-Trunk to Table needs to serve two kinds of clients:
+Trunk to Theory needs to serve two kinds of clients:
 
 1. **A web frontend** for desktop and mobile browsers, server-rendered HTML with client-side interactivity.
-2. **A REST API** for native mobile apps (iOS and Android, built separately, not covered in this book).
+2. **A REST API** for external consumers — CLI tools, Jupyter notebook integrations, data pipeline scripts, and other research tooling that interacts with the knowledge graph programmatically.
 
 This dual requirement drives the architecture.
 
@@ -209,7 +214,7 @@ This dual requirement drives the architecture.
 
 Leptos, the full-stack Rust framework we're using, provides `#[server]` functions. These let you write code that runs on the server but call it transparently from the client. They're elegant for the web frontend: you write a function that queries the database, and Leptos handles serializing the result across the client/server boundary.
 
-But Leptos server functions are not REST endpoints. They use Leptos's own serialization protocol. A Swift or Kotlin app can't call them. Neither can any HTTP client that isn't a Leptos frontend.
+But Leptos server functions are not REST endpoints. They use Leptos's own serialization protocol. A Python script running a SPARQL query can't call them. Neither can any HTTP client that isn't a Leptos frontend.
 
 We need standard, OpenAPI-documented REST endpoints alongside the Leptos frontend. And both need to agree on data shapes, validation rules, and business logic.
 
@@ -231,19 +236,23 @@ Leptos runs on top of Axum; they share the same server process, Tokio runtime, a
 │  ┌───────────────────────────────────────────┐  │
 │  │          Shared Service Layer             │  │
 │  │    (domain logic, validation, auth)       │  │
-│  └─────────────────────┬─────────────────────┘  │
-│                        ▼                        │
-│  ┌───────────────────────────────────────────┐  │
-│  │            SQLx + PostgreSQL              │  │
-│  └───────────────────────────────────────────┘  │
+│  └──────────┬────────────────────┬───────────┘  │
+│             ▼                    ▼              │
+│  ┌────────────────────┐  ┌───────────────────┐  │
+│  │  SQLx + PostgreSQL │  │     Oxigraph      │  │
+│  │   (app state)      │  │ (knowledge graph) │  │
+│  └────────────────────┘  └───────────────────┘  │
 └─────────────────────────────────────────────────┘
 ```
 
 The key is the **shared service layer**. All domain logic (validation, authorization, business rules) lives in one place. Both the Leptos server functions and the REST API handlers call into the same service layer. Neither interface implements business logic directly.
 
-- **Domain logic is tested once.** You don't write separate tests for the web frontend's "add item" logic and the API's "add item" logic. They call the same function.
-- **Both interfaces are guaranteed to agree on data shapes.** The Rust type system enforces this: if the service layer returns a `GroceryItem`, both interfaces get the same `GroceryItem`. No drift.
+Below the service layer, two databases serve different purposes. **PostgreSQL** stores application state: users, sessions, configuration, and any relational data that doesn't belong in a graph. **Oxigraph**, a Rust-native RDF triple store with full SPARQL 1.1 support, stores the knowledge graph: questions, evidence, hypotheses, experiments, results, and all the relationships between them. The service layer abstracts this split. A request to "show me all evidence linked to this question" queries Oxigraph via SPARQL. A request to "update the current user's profile" queries PostgreSQL via SQLx. The caller doesn't know or care which database answered.
+
+- **Domain logic is tested once.** You don't write separate tests for the web frontend's "pose a question" logic and the API's "pose a question" logic. They call the same function.
+- **Both interfaces are guaranteed to agree on data shapes.** The Rust type system enforces this: if the service layer returns a `Question`, both interfaces get the same `Question`. No drift.
 - **The REST API gets OpenAPI documentation generated at compile time** from the same Rust types the Leptos frontend uses. The API contract is enforced by the compiler.
+- **The dual database is invisible to consumers.** Whether data lives in PostgreSQL or Oxigraph is a service-layer concern. The API returns the same JSON regardless of which store answered the query.
 
 ### Technology Choices as CD Constraints
 
@@ -252,19 +261,21 @@ Every technology choice in this book maps back to a Continuous Delivery constrai
 | Choice | CD Constraint |
 |--------|---------------|
 | **PostgreSQL** over SQLite | MinimumCD requires production-like environments from day one. SQLite in dev, Postgres in prod is the kind of divergence that hides bugs. |
+| **Oxigraph** (Rust-native RDF store) | The knowledge graph runs in-process, embeds via RocksDB, and supports full SPARQL 1.1. No Java/Python triple store to manage separately. Same binary, same deployment, same pipeline. |
 | **SQLx** (compile-time checked queries) | The pipeline catches database contract violations before deployment. A typo in a column name breaks the build, not the user's session. |
 | **Terraform + Linode** | Everything-as-code. Infrastructure lives in the same repo and flows through the same pipeline. No snowflake servers, no manual provisioning. |
 | **utoipa** (compile-time OpenAPI) | The API contract is generated from Rust types, not maintained separately. Contract drift is impossible. |
 | **playwright-rust** | E2E testing in Rust. The testing tool is written in the same language as the application. The entire testing story (unit, integration, E2E) is Rust. |
 | **cargo-mutants** | Tests must demonstrate they catch regressions. Code coverage measures what runs; mutation testing measures what's *verified*. Incremental on every push; full sweep on a schedule. |
-| **panschema + LinkML** | The data model is a versioned architecture artifact. The pipeline generates and verifies all downstream representations. |
+| **panschema + LinkML** | The data model is a versioned architecture artifact. The pipeline generates and verifies all downstream representations: Rust types, SQL DDL, SHACL shapes, JSON Schema. |
+| **scimantic-ontology** (separate repo) | The domain ontology is a versioned artifact with its own release cycle. The app depends on a pinned version. Ontology changes flow through the pipeline like any other dependency update. |
 | **cargo-deny** | Supply chain policy as code. License compliance, crate source vetting, and duplicate detection are pipeline gates, not afterthoughts. |
 | **cargo-vet** | Supply chain vetting with trusted audit imports. Every dependency verified by someone you trust (Mozilla, Google, ISRG). New, unvetted dependencies require explicit exemption. |
 | **Dependabot + GitHub Security** | Automated dependency updates and static analysis. Security scanning that doesn't depend on developer memory. |
 | **prek** (pre-commit hooks) | Local hooks mirror CI checks. Catch formatting, lint, and security issues in seconds before pushing, keeping the pipeline green. Rust-native, reads the industry-standard `.pre-commit-config.yaml`. |
 | **Podman + compose.yaml** | The local PostgreSQL runs in a container matching the production version. No environment divergence. |
 | **VS Code Devcontainer** | One-click setup gives every reader the same environment. No "works on my machine" debugging. |
-| **Tailwind CSS v4** | Utility-first CSS with a Rust-native standalone CLI. Component styles are Leptos components composing Tailwind utilities. No third-party CSS framework, no Node.js dependency. The Trunk to Table theme is a versioned artifact. |
+| **Tailwind CSS v4** | Utility-first CSS with a Rust-native standalone CLI. Component styles are Leptos components composing Tailwind utilities. No third-party CSS framework, no Node.js dependency. The Trunk to Theory theme is a versioned artifact. |
 | **theoria** | A component catalog where you browse, configure, and document every UI component in isolation. Ensures components are reusable and well-documented as the project grows. |
 | **dokime** | Fast component-level testing without a full browser. Verifies rendering and signal reactivity for every component theoria catalogs. Catches regressions without the overhead of E2E tests. |
 | **tracing** | Structured logging from day one. The pipeline verifies code is correct at build time; `tracing` shows what's happening at runtime. You can't do canary deployments without observability to compare. |
@@ -272,17 +283,17 @@ Every technology choice in this book maps back to a Continuous Delivery constrai
 
 ## Why Component-Driven?
 
-Trunk to Table has two main UI surfaces: grocery lists and a recipe editor with live preview. Without a deliberate approach to UI, every chapter would reinvent button styles, form layouts, and spacing. The result would be a codebase where no two pages look the same.
+Trunk to Theory has several distinct UI surfaces: question boards where researchers pose and track questions, evidence timelines that link literature and observations to questions, hypothesis trees that visualize how evidence supports or refutes competing explanations, and experiment trackers that follow methodology from design through results. Without a deliberate approach to UI, every chapter would reinvent button styles, form layouts, and spacing. The result would be a codebase where no two pages look the same.
 
-We build the UI from composable Leptos components from the start. A Button component introduced in [The Web Frontend](./ch04-the-web-frontend.md) is the same Button used in [Recipe Creation](./ch10-recipe-creation.md). A Card component that displays a grocery item also displays a recipe. The components are small, reusable, and tested in isolation.
+We build the UI from composable Leptos components from the start. A Button component introduced in [The Web Frontend](./ch04-the-web-frontend.md) is the same Button used in [Results & Analysis](./ch11-results-and-analysis.md). A Card component that displays a research question also displays a piece of evidence or an experiment summary. The components are small, reusable, and tested in isolation.
 
-[Tailwind CSS v4](https://tailwindcss.com) provides the styling foundation. Its standalone CLI is written in Rust (using Lightning CSS), so it requires no Node.js runtime. Tailwind scans your Leptos `view!` macros for class names and generates only the CSS you actually use. We define a Trunk to Table theme (color palette, typography scale, spacing tokens) in Tailwind's configuration, then compose those utilities inside Leptos components. A `Button` component isn't a CSS class name; it's a Rust function that encapsulates a specific combination of Tailwind utilities, accepts typed props (`variant`, `size`, `disabled`), and renders consistently everywhere it's used.
+[Tailwind CSS v4](https://tailwindcss.com) provides the styling foundation. Its standalone CLI is written in Rust (using Lightning CSS), so it requires no Node.js runtime. Tailwind scans your Leptos `view!` macros for class names and generates only the CSS you actually use. We define a Trunk to Theory theme (color palette, typography scale, spacing tokens) in Tailwind's configuration, then compose those utilities inside Leptos components. A `Button` component isn't a CSS class name; it's a Rust function that encapsulates a specific combination of Tailwind utilities, accepts typed props (`variant`, `size`, `disabled`), and renders consistently everywhere it's used.
 
 This approach keeps the entire build chain Rust-native and eliminates a third-party CSS framework from the dependency tree. The component styles are *yours*, defined in your codebase, tested by your pipeline.
 
-For component development, we use [theoria](https://github.com/padamson/theoria) (Greek: θεωρία, "a journey to witness a spectacle"), a Rust-native component catalog. It provides a dedicated route where you can browse every component, configure its props, and see the rendered output in isolation. When you build a `Card` component that will be used on both the grocery list page and the recipe page, theoria lets you develop and refine it independently before it touches either page. You'll see it introduced in [The Web Frontend](./ch04-the-web-frontend.md) and used throughout the book.
+For component development, we use [theoria](https://github.com/padamson/theoria) (Greek: theoria, "a journey to witness a spectacle"), a Rust-native component catalog. It provides a dedicated route where you can browse every component, configure its props, and see the rendered output in isolation. When you build a `Card` component that will be used on both the question board and the evidence timeline, theoria lets you develop and refine it independently before it touches either page. You'll see it introduced in [The Web Frontend](./ch04-the-web-frontend.md) and used throughout the book.
 
-For component testing, we use [dokime](https://github.com/padamson/dokime) (Greek: δοκιμή, "proof by fire"), a Rust-native component testing framework. It verifies rendering, signal reactivity, and event handling for every component theoria catalogs, without booting a full browser. A `Button` with three variants and two sizes has six prop combinations; dokime tests them all in milliseconds. Together with standard `#[test]` functions for domain logic and playwright-rust for full E2E flows, dokime covers the middle of the testing pyramid that would otherwise require slow browser-based tests.
+For component testing, we use [dokime](https://github.com/padamson/dokime) (Greek: dokime, "proof by fire"), a Rust-native component testing framework. It verifies rendering, signal reactivity, and event handling for every component theoria catalogs, without booting a full browser. A `Button` with three variants and two sizes has six prop combinations; dokime tests them all in milliseconds. Together with standard `#[test]` functions for domain logic and playwright-rust for full E2E flows, dokime covers the middle of the testing pyramid that would otherwise require slow browser-based tests.
 
 ```admonish tip
 theoria and dokime are being built alongside this book. If you're reading an early draft, their repos may be empty or incomplete (or non-existent!). They'll be ready by [The Web Frontend](./ch04-the-web-frontend.md), where we introduce them.
@@ -297,9 +308,10 @@ That's no longer true:
 - **Leptos** provides the full-stack story: server-side rendering, WebAssembly hydration, and `#[server]` functions that bridge the client/server boundary. It's pre-1.0 and the API is still settling, but the core model is stable and the community is active.
 - **Axum** is the de facto standard backend framework, built by the Tokio team. Its extractor pattern takes getting used to, but once you learn it, routing and request handling are concise. It's the foundation everything else runs on.
 - **SQLx** provides compile-time checked database queries. Your SQL is verified against the real database schema during `cargo build`, not at runtime. A mistyped column name or a type mismatch between your struct and the table stops the build before you can deploy it.
+- **Oxigraph** provides an embeddable, Rust-native RDF triple store with full SPARQL 1.1 support. It runs in-process, stores data via RocksDB, and handles Turtle, N-Triples, and JSON-LD serialization. No Java runtime, no separate server process. The knowledge graph is part of the binary.
 - **utoipa** generates OpenAPI specifications at compile time from your Rust types. The API documentation is always correct because it's generated from the same code that serves the API.
 - Cross-browser E2E testing is possible from Rust now, via **playwright-rust**. Chromium, Firefox, WebKit, driven from `#[test]` functions. No JavaScript test runner required.
-- **panschema** generates Rust types, SQL, and JSON Schema from a single LinkML model. It's early-stage software; we'll be extending it as we go, and you'll see that process firsthand.
+- **panschema** generates Rust types, SQL, SHACL shapes, and JSON Schema from a single LinkML model. It's early-stage software; we'll be extending it as we go, and you'll see that process firsthand.
 
 But the ecosystem is only half the story. The other half is what Rust's type system and compiler do for your delivery pipeline.
 
@@ -309,20 +321,38 @@ And then there's the convergence that makes this book timely: **AI coding assist
 
 ## What You're Going to Build
 
-Trunk to Table is a grocery list and recipe management application. We chose this domain because:
+Trunk to Theory is a scientific knowledge management platform. We chose this domain because:
 
-- **It's universally understood.** Everyone has made a grocery list. No time spent explaining the problem space means more time on engineering.
-- **It's not trivial.** Authentication, shared state (household lists), relational data (recipes, ingredients, grocery items), and enough UI complexity to exercise every layer of the stack.
-- **It decomposes into natural vertical slices.** Add an item. Check it off. Create a recipe. Generate a grocery list from recipes. Each feature is independently deployable, exactly what CD demands.
+- **It's distinctive.** There is no existing "build a scientific knowledge graph in Rust" book. The domain exercises capabilities (ontologies, RDF, SPARQL, dual databases, graph traversal) that a generic CRUD app never touches. If you finish this book, you will have built something no tutorial has covered before.
+- **It deeply exercises the stack.** A knowledge graph demands complex relationships, graph queries, ontology validation, and dual-database coordination. Every layer of the architecture earns its keep. The schema-driven approach isn't a nice-to-have; it's essential when your data model is an ontology.
+- **It decomposes into natural vertical slices.** Pose a question. Link evidence. Form a hypothesis. Design an experiment. Record results. Each entity in the scientific workflow is independently deployable, exactly what CD demands.
+- **The author is a scientist.** This isn't a contrived teaching example. It's a tool the author will use in their own research. That alignment between dogfooding and career means the domain gets the depth it deserves.
 
-By the end of this book, Trunk to Table will support:
+By the end of this book, Trunk to Theory will support:
 
-- **Grocery lists.** Create, edit, and share lists within a household. Add items manually or generate them from recipes. Check items off, uncheck them, archive completed lists.
-- **Recipes.** Create and edit recipes with a live preview in the editor. Each recipe has ingredients (with quantities and units), instructions, and metadata. The recipe editor shows formatted output as you type, exercising Leptos's fine-grained reactivity.
-- **Recipe-to-grocery integration.** Select recipes for the week and generate a grocery list from their combined ingredients. The system aggregates quantities across recipes ("two recipes both call for onions"), handles unit conversion, and lets you edit the generated list before shopping.
-- **User authentication and households.** Session-based auth, shared grocery lists within a household, authorization logic for who can see and edit what.
+- **Questions.** Pose research questions, tag them with scientific domains, and track their status from open through investigating to resolved. Questions are the starting point of every inquiry in the knowledge graph.
+- **Evidence.** Link literature references, datasets, and observations to questions. Evidence accumulates over time, forming the empirical foundation that supports or challenges your thinking. Each piece of evidence carries provenance: where it came from, when it was added, and which questions it addresses.
+- **Hypotheses.** Form testable hypotheses from accumulated evidence. A hypothesis connects to the evidence that motivated it and the questions it aims to answer. The knowledge graph captures these relationships, letting you trace any hypothesis back to its evidentiary roots.
+- **Experiments.** Design experiments to test hypotheses. Track methodology, parameters, and expected outcomes. An experiment is linked to the hypothesis it tests, making the full chain from question to experimental design navigable.
+- **Results.** Record experimental outcomes and link them back to hypotheses. Results either support or refute hypotheses, and the knowledge graph captures this verdict. Over time, the graph becomes a navigable history of your research: which questions led to which hypotheses, which experiments tested them, and what the data showed.
+- **Knowledge graph.** Oxigraph stores the scientific entities and all relationships between them as RDF triples, queryable via SPARQL. PostgreSQL stores application state: users, sessions, and configuration. The dual-database architecture is invisible to the user; the service layer handles routing queries to the right store.
+- **User authentication.** Session-based auth, authorization logic for who can see and edit what.
 
-The first vertical slice, "a user can add an item to their grocery list," takes six chapters. That's where we build the full stack and complete the first ACD workflow cycle. Recipes, recipe-grocery integration, authentication, and households come in later chapters, building on that foundation. Each feature adds faster because the scaffolding (in the codebase and in your understanding) is already in place.
+The first vertical slice, "a user can pose a research question," takes six chapters. That's where we build the full stack and complete the first ACD workflow cycle. Evidence, hypotheses, experiments, results, and the knowledge graph queries that tie them together come in later chapters, building on that foundation. Each feature adds faster because the scaffolding (in the codebase and in your understanding) is already in place.
+
+### The Scientific Workflow as a Chapter Map
+
+The chapters in Part II follow the scientific workflow itself:
+
+| Chapter | Entity | What the user can do |
+|---------|--------|---------------------|
+| [Evidence](./ch07-evidence.md) | Evidence | Link literature, data, and observations to questions |
+| [User Authentication](./ch08-user-authentication.md) | Users | Log in, own their research, control access |
+| [Hypotheses](./ch09-hypotheses.md) | Hypothesis | Form testable hypotheses from accumulated evidence |
+| [Experiments](./ch10-experiments.md) | Experiment | Design experiments to test hypotheses, track methodology |
+| [Results & Analysis](./ch11-results-and-analysis.md) | Result | Record outcomes, link back to hypotheses, traverse the full graph |
+
+Each chapter adds the next entity, the next set of relationships in the knowledge graph, and the next set of SPARQL queries. By the end, the user can navigate from any question to the experiments that tested it and the results those experiments produced.
 
 ```admonish info title="Architecture Decision Records"
 Some teams document decisions like the ones in this chapter using Architecture Decision Records (ADRs). These are short markdown files with a Status, Context, Decision, and Consequences section, stored in the repo under `docs/adr/`. It's a widely adopted practice (ThoughtWorks has recommended it since 2016) and the format is useful: six months later, nobody remembers *why* SQLite was rejected, and the ADR captures that. The risk is that ADRs rot. Teams write them enthusiastically for a month, then stop, and stale ADRs mislead more than they help. In this book, the chapters themselves serve as our decision record. Every technology choice has its rationale right here in the narrative. If you adopt ADRs in your own projects, keep them short, update them when decisions change, and delete them when they're no longer relevant.
@@ -337,6 +367,7 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 - [ ] VS Code devcontainer provides a one-click setup with full Rust toolchain *(Ch 2)*
 - [ ] Podman (or Docker) is the container runtime *(Ch 2)*
 - [ ] PostgreSQL runs in a container via `compose.yaml`, matching the production version *(Ch 2)*
+- [ ] Oxigraph runs embedded in the application binary (no separate container needed) *(Ch 2)*
 
 ### Pipeline Basics
 
@@ -344,7 +375,8 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 - [ ] `cargo leptos build` compiles, tests, and packages with a single command *(Ch 2)*
 - [ ] All work integrates to trunk at least daily *(Ch 2)*
 - [ ] Deployment to staging is automated via Terraform + GitHub Actions *(Ch 2)*
-- [ ] LinkML schema is versioned in the repo; panschema generates types and migrations in CI *(Ch 2)*
+- [ ] LinkML schema is versioned in the repo; panschema generates types, migrations, and SHACL shapes in CI *(Ch 2)*
+- [ ] scimantic-ontology is a pinned dependency; ontology updates flow through the pipeline *(Ch 2)*
 - [ ] Structured logging with `tracing` from the first handler *(Ch 2)*
 - [ ] Pre-commit hooks mirror CI checks via `prek` *(Ch 2)*
 - [ ] First unit test exists and passes *(Ch 3)*
@@ -385,6 +417,7 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 - [ ] Input validation enforced at the API boundary *(Ch 6)*
 - [ ] API endpoints are paginated with cursor-based pagination *(Ch 6)*
 - [ ] HTTP caching headers on read endpoints *(Ch 6)*
+- [ ] SPARQL queries against Oxigraph are tested with known graph fixtures *(Ch 7)*
 
 ### Production Readiness
 
@@ -395,6 +428,7 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 - [ ] Database backups are automated via Terraform *(Ch 2)*
 - [ ] CSP headers and rate limiting are configured *(Ch 12)*
 - [ ] Database restore process is tested against real data *(Ch 12)*
+- [ ] Oxigraph backup and restore is automated alongside PostgreSQL *(Ch 12)*
 - [ ] Feature flags decouple deployment from release *(Ch 13)*
 - [ ] Load testing establishes baseline capacity and failure modes *(Ch 14)*
 - [ ] Observability: tracing spans and metrics support canary comparison *(Ch 14)*

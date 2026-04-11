@@ -8,7 +8,7 @@ argument-hint: "<tool-name> <description of what's missing>"
 
 # Log a Dogfooding Blocker
 
-You are helping an author who is simultaneously writing a book (Trunk to Table)
+You are helping an author who is simultaneously writing a book (Trunk to Theory)
 and developing several tools it depends on. When the book, app,
 or toolchain needs a feature or fix that doesn't exist yet, this skill
 tracks the blocker and sets up the contribution path.
@@ -20,7 +20,7 @@ There are two categories of blocker:
    the fix upstream via PR. The fork is used until upstream merges.
 
 IMPORTANT: Public issues and PRs in any repo must stand on their own as generic
-requests. Do not reference "Trunk to Table", chapter numbers, or the app
+requests. Do not reference "Trunk to Theory", chapter numbers, or the app
 in public repos. Book-specific context goes only in the t2t tracking issue.
 
 ## Known tools

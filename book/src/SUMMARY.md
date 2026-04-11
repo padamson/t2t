@@ -13,13 +13,13 @@
 - [Completing the Slice](./ch05-completing-the-slice.md)
 - [The REST API](./ch06-the-rest-api.md)
 
-## Building on the Foundation
+## The Scientific Workflow
 
-- [Check Off Items](./ch07-check-off-items.md)
+- [Evidence](./ch07-evidence.md)
 - [User Authentication](./ch08-user-authentication.md)
-- [Shared Grocery Lists](./ch09-shared-grocery-lists.md)
-- [Recipe Creation](./ch10-recipe-creation.md)
-- [Recipe-to-Grocery Integration](./ch11-recipe-to-grocery.md)
+- [Hypotheses](./ch09-hypotheses.md)
+- [Experiments](./ch10-experiments.md)
+- [Results & Analysis](./ch11-results-and-analysis.md)
 - [Security Hardening](./ch12-security-hardening.md)
 - [Feature Flags](./ch13-feature-flags.md)
 - [Progressive Rollout](./ch14-progressive-rollout.md)

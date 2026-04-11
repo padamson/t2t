@@ -1,9 +1,32 @@
 # Changelog
 
-All notable changes to the Trunk to Table manuscript are documented here.
+All notable changes to the Trunk to Theory manuscript are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 Version scheme: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for small edits and fixes. `v1.0.0` marks the complete first edition. Each tagged version triggers a GitHub Release with a downloadable PDF.
+
+## [v0.1.5] - 2026-04-11
+
+### Changed
+- **Domain pivot:** Renamed from "Trunk to Table" to "Trunk to Theory"
+- Domain changed from grocery/recipe management to scientific knowledge management (scimantic)
+- Core entities: Questions → Evidence → Hypotheses → Experiments → Results
+- Dual database architecture: Oxigraph (RDF knowledge graph) + PostgreSQL (app state)
+- panschema now generates SHACL shapes in addition to Rust types, SQL DDL, JSON Schema
+- Ontology lives in separate `padamson/scimantic-ontology` repo
+- Chapter 7 renamed: "Check Off Items" → "Evidence"
+- Chapter 9 renamed: "Shared Grocery Lists" → "Hypotheses"
+- Chapter 10 renamed: "Recipe Creation" → "Experiments"
+- Chapter 11 renamed: "Recipe-to-Grocery Integration" → "Results & Analysis"
+- Part II renamed: "Building on the Foundation" → "The Scientific Workflow"
+- REST API serves external consumers (CLI tools, Jupyter integrations) instead of mobile apps
+- Book plan, chapter scaffolds, and all references updated for new domain
+
+### Added
+- Oxigraph (Rust-native RDF triple store) to technology stack
+- sophia_rs (RDF toolkit) to technology stack
+- SPARQL endpoint in REST API chapter
+- `padamson/scimantic-ontology` as related repo
 
 ## [v0.1.4] - 2026-04-11
 
@@ -68,6 +91,7 @@ Version scheme: `v0.x.0` for new chapters or significant revisions, `v0.x.y` for
 - Structured logging (tracing) and error handling (thiserror) added to chapter progression
 - Dogfood blocker tracking for third-party tools (mdbook-admonish, mdbook-quiz)
 
+[v0.1.5]: https://github.com/padamson/t2t/compare/v0.1.4...v0.1.5
 [v0.1.4]: https://github.com/padamson/t2t/compare/v0.1.3...v0.1.4
 [v0.1.3]: https://github.com/padamson/t2t/compare/v0.1.2...v0.1.3
 [v0.1.2]: https://github.com/padamson/t2t/compare/v0.1.1...v0.1.2

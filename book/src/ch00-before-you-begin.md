@@ -6,7 +6,7 @@ This book teaches full-stack Rust development through the lens of Continuous Del
 You're about to clone a specific commit of the MinimumCD Practice Guide. Pinning to a commit ensures you see the exact content that this book was written against even if the live site changes later.
 ```
 
-Rather than restate that material here, we'll reference it directly. You'll run a local copy of the MinimumCD Practice Guide alongside this book, reading specific sections as they become relevant and then applying what you've learned to our project, Trunk to Table.
+Rather than restate that material here, we'll reference it directly. You'll run a local copy of the MinimumCD Practice Guide alongside this book, reading specific sections as they become relevant and then applying what you've learned to our project, Trunk to Theory.
 
 ## Set Up the MinimumCD Practice Guide
 
@@ -56,7 +56,7 @@ Open [localhost:1313/docs/migrate-to-cd/greenfield/](http://localhost:1313/docs/
 
 These are not optional. The Practice Guide provides the *why* behind the practices we follow. This book provides the *how* and *what* as they apply to a specific Rust stack. Skipping the guide sections means building without understanding the reasoning, and that defeats the purpose.
 
-Each chapter sends you to the Practice Guide for the theory, then brings you back to apply it to Trunk to Table.
+Each chapter sends you to the Practice Guide for the theory, then brings you back to apply it to Trunk to Theory.
 
 ## What You Need
 
@@ -71,6 +71,7 @@ Each chapter sends you to the Practice Guide for the theory, then brings you bac
 - The Rust toolchain (via `rustup`)
 - `cargo-leptos`, `sqlx-cli`, `cargo-nextest`, `cargo-audit`, `cargo-deny`, `cargo-vet`, `cargo-mutants`, `prek`
 - `panschema` for schema-driven code generation
+- Oxigraph (Rust-native RDF triple store, installed during the book)
 - Hugo, Go, and Node.js (for the MinimumCD Practice Guide, installed above)
 
 **Not required:**

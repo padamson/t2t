@@ -5,4 +5,4 @@ set -euo pipefail
 MDBOOK_OUTPUT='{"html": {"additional-css": ["./mdbook-admonish.css"]}, "typst-pdf": {"pdf": true, "custom-template": "template.typ"}}' \
   mdbook build
 
-echo "PDF: build/typst-pdf/Trunk to Table.pdf"
+echo "PDF: build/typst-pdf/Trunk to Theory.pdf"

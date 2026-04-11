@@ -22,9 +22,9 @@ See the [minimumcd-mcp repository](https://github.com/padamson/minimumcd-mcp) fo
 
 Several tools introduced in this book were built by the author to fill gaps in the Rust ecosystem:
 
-- **[panschema](https://github.com/padamson/panschema)** generates Rust types, SQL DDL, and JSON Schema from LinkML models. Introduced in Chapter 2, used throughout.
+- **[panschema](https://github.com/padamson/panschema)** generates Rust types, SQL DDL, SHACL shapes, and JSON Schema from LinkML models. Introduced in Chapter 2, used throughout.
 - **[playwright-rust](https://github.com/padamson/playwright-rust)** provides Rust language bindings for Microsoft Playwright. Used for E2E and security testing from Chapter 5.
 - **[theoria](https://github.com/padamson/theoria)** is a Rust-native component explorer for Leptos. Introduced in Chapter 4.
 - **[dokime](https://github.com/padamson/dokime)** is a Rust-native component testing framework for Leptos. Introduced in Chapter 4.
 
-Each of these was developed alongside the book and the Trunk to Table application. When a tool needed a new feature to support a chapter's content, we paused, built the feature, and came back. That process is part of the story this book tells about what it means to build with Rust today: sometimes the tool you need doesn't exist yet, and you build it.
+Each of these was developed alongside the book and the Trunk to Theory application. When a tool needed a new feature to support a chapter's content, we paused, built the feature, and came back. That process is part of the story this book tells about what it means to build with Rust today: sometimes the tool you need doesn't exist yet, and you build it.

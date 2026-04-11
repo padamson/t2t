@@ -60,7 +60,7 @@ has forked and contributed upstream.
 
    ### Worked around (review needed)
    - panschema#8: "FromRow derive on generated types" — OPEN
-     Workaround: hand-written FromRow impl in models/grocery_item.rs
+     Workaround: hand-written FromRow impl in models/question.rs
    ```
 
 5. **For resolved / merged / released blockers**, help the user resume:
