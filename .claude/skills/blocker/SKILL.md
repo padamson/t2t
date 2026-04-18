@@ -13,11 +13,13 @@ and developing several tools it depends on. When the book, app,
 or toolchain needs a feature or fix that doesn't exist yet, this skill
 tracks the blocker and sets up the contribution path.
 
-There are two categories of blocker:
+There are three categories of blocker:
 
 1. **Author-maintained tools** — the author owns the repo and can merge fixes directly.
 2. **Third-party tools** — the author forks, fixes, uses the fork, and contributes
    the fix upstream via PR. The fork is used until upstream merges.
+3. **New tools** — no existing tool solves the problem; create a new repo from
+   `padamson/rust-project-template` and build the tool from scratch.
 
 IMPORTANT: Public issues and PRs in any repo must stand on their own as generic
 requests. Do not reference "Trunk to Theory", chapter numbers, or the app
@@ -89,6 +91,37 @@ If the tool isn't in either list, ask the user for the GitHub repo path.
    [the entry that will be appended]
    ```
 
+   ### For new tools (no existing tool solves the problem):
+
+   ```
+   # Blocker: [tool-name] — [description]
+
+   ## Category: New tool
+
+   ## New repo
+   **Name:** padamson/<tool-name>
+   **Template:** padamson/rust-project-template
+   **Create with:** gh repo create padamson/<tool-name> --template padamson/rust-project-template --public --clone
+
+   ## Initial Issue(s) (to be created in the new repo)
+   **Title:** [title of the primary feature]
+   **Body:**
+   [design doc or requirements as they will appear in the new repo]
+
+   ## Tracking Issue (to be created in padamson/t2t)
+   **Title:** [blocker:<tool-name>] [description]
+   **Labels:** dogfood-blocker
+   **Body:**
+   [full issue body with book context, link to new repo, acceptance criteria]
+
+   ## dogfood-gaps.md Entry
+   [the entry that will be appended]
+
+   ## Post-template setup
+   [Checklist items from SETUP.md in the template: Cargo.toml customization,
+   GitHub settings, crates.io token, etc.]
+   ```
+
    ### For third-party tools:
 
    ```
@@ -145,7 +178,34 @@ If the tool isn't in either list, ask the user for the GitHub repo path.
      - [ ] [Specific, testable criteria]
      ```
 
-6. **For third-party tools — set up the fork and contribution path:**
+6. **For new tools — create the repo from the template:**
+
+   a. **Create the repo from the template:**
+      ```bash
+      gh repo create padamson/<tool-name> \
+        --template padamson/rust-project-template \
+        --description "<short description>" \
+        --public --clone
+      ```
+      Clone target should be `~/src/github-padamson/<tool-name>/` (sibling to t2t).
+      If `gh` clones it elsewhere, move it.
+
+   b. **Customize the scaffold:**
+      - Update `Cargo.toml`: name, description, repository, authors, categories, keywords
+      - Update `README.md` with tool description and usage
+      - Update `CLAUDE.md` with tool-specific context
+
+   c. **Configure GitHub settings** (follow SETUP.md in the new repo):
+      - Enable code security features (Dependabot, code scanning, secret scanning, push protection, private vulnerability reporting, malware alerts)
+      - Set branch protection on main requiring status checks
+      - Add `CARGO_REGISTRY_TOKEN` secret if publishing to crates.io
+
+   d. **Create initial design/requirements issue(s)** in the new repo with acceptance criteria
+      and any design documents the user approved in plan mode.
+
+   e. **Push initial changes** and verify CI passes.
+
+7. **For third-party tools — set up the fork and contribution path:**
 
    a. **Fork the upstream repo** if `padamson/<repo>` doesn't exist:
       `gh repo fork <upstream/repo> --clone=false`
@@ -165,18 +225,18 @@ If the tool isn't in either list, ask the user for the GitHub repo path.
       - For Cargo dependencies: use `[patch]` or git dependency in `Cargo.toml`
       - Add a comment in the config noting the upstream PR to track
 
-7. **Create the tracking issue in t2t.** Use `gh issue create -R padamson/t2t` with:
+8. **Create the tracking issue in t2t.** Use `gh issue create -R padamson/t2t` with:
    - Title: `[blocker:<tool-name>] <description>`
    - Labels: `dogfood-blocker`
    - Body:
      ```
      ## Blocked by
 
-     <upstream/repo>#<number> — [issue/PR title]
+     <owner/repo>#<number> — [issue/PR title]
 
      ## Category
 
-     [Author-maintained | Third-party (forked)]
+     [Author-maintained | Third-party (forked) | New tool]
 
      ## Book context
 
@@ -199,26 +259,29 @@ If the tool isn't in either list, ask the user for the GitHub repo path.
      [What to do when upstream merges — remove fork reference, update to released version]
      ```
 
-8. **Record in dogfood-gaps.md.** Append an entry to `dogfood-gaps.md` in the t2t repo root:
+9. **Record in dogfood-gaps.md.** Append an entry to `dogfood-gaps.md` in the t2t repo root:
    ```
    ## [date] — [tool-name]: [issue title]
-   - **Category:** [Author-maintained | Third-party]
-   - **Upstream:** <upstream/repo>#<number>
+   - **Category:** [Author-maintained | Third-party | New tool]
+   - **Repo:** padamson/<tool-name> (for new tools and author-maintained)
+   - **Upstream:** <upstream/repo>#<number> (for third-party)
    - **Fork:** padamson/<repo> (if third-party)
    - **Upstream PR:** <upstream/repo>#<number> (if exists)
    - **Tracking issue:** padamson/t2t#<number>
    - **Chapter:** [chapter]
    - **Status:** Open
-   - **Workaround:** [description, "Using fork", or "None"]
+   - **Workaround:** [description, "Using fork", or "None — tool in development"]
    ```
    Create the file if it doesn't exist. Add a header `# Dogfood Gaps` if creating new.
 
-9. **Report back.** Show the user:
-   - All issue/PR URLs (upstream and t2t)
-   - Fork URL if created
-   - Config changes needed to use the fork
-   - Summary of what was recorded
-   - For third-party: "When upstream merges the PR, run `/resume` to switch back
-     to the released version."
-   - For author-maintained: "When the issue is resolved, run `/resume` to pick up
-     where you left off."
+10. **Report back.** Show the user:
+    - All issue/PR URLs (upstream and t2t)
+    - Fork URL if created, or new repo URL if new tool
+    - Config changes needed to use the fork (third-party) or consume the new tool
+    - Summary of what was recorded
+    - For third-party: "When upstream merges the PR, run `/resume` to switch back
+      to the released version."
+    - For author-maintained: "When the issue is resolved, run `/resume` to pick up
+      where you left off."
+    - For new tools: "When the tool is usable, run `/resume` to integrate it
+      into the book workflow."

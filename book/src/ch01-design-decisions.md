@@ -274,7 +274,6 @@ Every technology choice in this book maps back to a Continuous Delivery constrai
 | **Dependabot + GitHub Security** | Automated dependency updates and static analysis. Security scanning that doesn't depend on developer memory. |
 | **prek** (pre-commit hooks) | Local hooks mirror CI checks. Catch formatting, lint, and security issues in seconds before pushing, keeping the pipeline green. Rust-native, reads the industry-standard `.pre-commit-config.yaml`. |
 | **Podman + compose.yaml** | The local PostgreSQL runs in a container matching the production version. No environment divergence. |
-| **VS Code Devcontainer** | One-click setup gives every reader the same environment. No "works on my machine" debugging. |
 | **Tailwind CSS v4** | Utility-first CSS with a Rust-native standalone CLI. Component styles are Leptos components composing Tailwind utilities. No third-party CSS framework, no Node.js dependency. The Scimantic theme is a versioned artifact. |
 | **theoria** | A component catalog where you browse, configure, and document every UI component in isolation. Ensures components are reusable and well-documented as the project grows. |
 | **dokime** | Fast component-level testing without a full browser. Verifies rendering and signal reactivity for every component theoria catalogs. Catches regressions without the overhead of E2E tests. |
@@ -417,8 +416,8 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 
 ### Development Environment
 
-- [ ] VS Code devcontainer provides a one-click setup with full Rust toolchain *(Ch 2)*
-- [ ] Podman (or Docker) is the container runtime *(Ch 2)*
+- [ ] Rust toolchain installed on the host via `rustup` *(Ch 2)*
+- [ ] Podman is the container runtime *(Ch 2)*
 - [ ] PostgreSQL runs in a container via `compose.yaml`, matching the production version *(Ch 2)*
 - [ ] Oxigraph runs embedded in the application binary (no separate container needed) *(Ch 2)*
 

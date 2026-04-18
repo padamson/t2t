@@ -62,7 +62,7 @@ Each chapter sends you to the Practice Guide for the theory, then brings you bac
 
 **Required:**
 - Basic Rust knowledge (you've read the first half of [*The Rust Programming Language*](https://doc.rust-lang.org/book/))
-- A terminal and a text editor (VS Code recommended for devcontainer support)
+- A terminal and a text editor of your choice
 - Git
 - A GitHub account
 - Podman (or Docker) installed locally

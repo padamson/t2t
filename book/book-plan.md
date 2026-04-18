@@ -22,7 +22,7 @@ Statuses: `scaffold` → `outlining` → `drafting` → `draft` → `review` →
 |----|-------|--------|--------------------|------------|------------|-------|
 | 00 | Before You Begin | scaffold | — | — | — | No code; reading assignments + local MinimumCD setup |
 | 01 | Design Decisions | draft | `chapter-01` | CLAUDE.md, design docs | — | Prose complete, needs review |
-| 02 | Pipeline First | scaffold | `chapter-02` | Devcontainer, compose.yaml, Axum health endpoint, LinkML schema, panschema, GH Actions, Terraform, tracing setup | — | First code chapter; heaviest setup |
+| 02 | Pipeline First | scaffold | `chapter-02` | rustup, compose.yaml, Axum health endpoint, LinkML schema, panschema, GH Actions, Terraform, tracing setup | — | First code chapter; heaviest setup |
 | 03 | The Database | scaffold | `chapter-03` | PostgreSQL via Terraform, Oxigraph setup, questions migration, service layer, thiserror, first unit test, first cargo-mutants run | ch02 tagged | |
 | 04 | The Web Frontend | scaffold | `chapter-04` | Leptos components (Button, Input, Card, Layout), Tailwind v4 theme, theoria, dokime, questions page, accessibility | ch03 tagged | |
 | 05 | Completing the Slice | scaffold | `chapter-05` | Add-question form, server action, playwright-rust E2E + DAST, mutation testing across slice | ch04 tagged | First full ACD workflow cycle |
@@ -394,12 +394,13 @@ The author's own crate. Rust language bindings for Microsoft Playwright. Provide
 
 Using playwright-rust for E2E tests as a stage in the CI/CD pipeline is also a compelling bit of dogfooding that ties the narrative together.
 
-### Containers: Podman + Devcontainer
+### Containers: Podman
 
-- **Podman** over Docker Desktop: Fully open source, daemonless, rootless by default (better security posture), and `podman compose` is a drop-in replacement for `docker compose`. No licensing concerns for readers at companies over 250 employees. Docker remains compatible for readers who prefer it.
-- **`compose.yaml` with PostgreSQL + Oxigraph:** The local development databases run in containers, matching the same PostgreSQL version as RDS PostgreSQL in staging and production. Oxigraph runs as an embedded store in development (in-process, no container needed) but the compose file includes it for integration testing. This eliminates environment divergence from day one, consistent with the MinimumCD principle of production-like environments.
-- **VS Code Devcontainer (`.devcontainer/devcontainer.json`):** The recommended setup path for readers. Open the repo in VS Code, click "Reopen in Container," and get a fully configured environment: Rust toolchain, cargo-leptos, sqlx-cli, panschema, playwright-rust dependencies, Oxigraph, and PostgreSQL as a service. No "install these 12 things before Chapter 2" section. Readers who prefer manual setup can still follow along, but the devcontainer is the happy path.
-- **Podman Desktop:** Provides the GUI experience for container management. VS Code's container tooling works with both Podman and Docker.
+- **Podman** over Docker Desktop: Fully open source, daemonless, rootless by default (better security posture), and `podman compose` is a drop-in replacement for `docker compose`. No licensing concerns for readers at companies over 250 employees.
+- **`compose.yaml` with PostgreSQL:** The local development database runs in a container, matching the same PostgreSQL version as RDS PostgreSQL in staging and production. Oxigraph runs as an embedded store in the application binary (in-process, no container needed). This eliminates environment divergence from day one, consistent with the MinimumCD principle of production-like environments.
+- **Podman Desktop:** Provides a GUI for container management if preferred.
+
+The Rust toolchain is installed on the host via `rustup`, not inside a container. This keeps editor integrations (rust-analyzer, debuggers) working with their usual setup on the host.
 
 ### Build Tooling: cargo-leptos
 
@@ -422,8 +423,8 @@ Handles:
 | Component explorer | theoria | Rust-native component catalog (author's project, dogfooded here) |
 | Component testing | dokime | Rust-native component testing framework for Leptos (author's project, dogfooded here) |
 | Authentication | argon2 + tower-sessions | Password hashing + session management |
-| Containers | Podman + compose.yaml | Local dev databases, devcontainer, production images |
-| Dev environment | VS Code Devcontainer | One-click setup with full toolchain + PostgreSQL + Oxigraph |
+| Containers | Podman + compose.yaml | Local dev database (PostgreSQL), production images |
+| Dev environment | rustup (host-installed Rust) | Editor of your choice, host-native rust-analyzer/debugger integration |
 | IaC | Terraform + AWS Provider | Infrastructure provisioning (staging + prod) |
 | CI/CD | GitHub Actions | Pipeline automation, trunk-based workflow |
 | E2E Testing | playwright-rust | Cross-browser end-to-end tests (functional + DAST) |
@@ -638,7 +639,7 @@ Production Readiness:
 
 This chapter has five phases, each ending with a concrete checkpoint where the reader runs something and sees it work. Greenfield checklist items are checked off in batches at each checkpoint.
 
-**Phase 1: Local Development Environment.** Devcontainer, Podman, compose.yaml with PostgreSQL matching the production version. *Checkpoint: `podman compose up`, PostgreSQL is running.*
+**Phase 1: Local Development Environment.** Rust toolchain via rustup, Podman, compose.yaml with PostgreSQL matching the production version. *Checkpoint: `podman compose up`, PostgreSQL is running; `cargo --version` reports stable.*
 
 **Phase 2: Hello-World Endpoint + Build.** Axum health-check endpoint, `cargo-leptos` project structure, structured logging with `tracing`. *Checkpoint: `curl localhost:3000/health` returns "ok" with a log line.*
 
@@ -649,7 +650,7 @@ This chapter has five phases, each ending with a concrete checkpoint where the r
 **Phase 5: Infrastructure + Deployment.** Terraform configs for AWS (staging + production), HTTPS/TLS, secrets management, `/security-review` skill, pre-commit hooks, immutable artifacts, externalized configuration, rollback tested. *Checkpoint: hit the production URL over HTTPS, see "ok."*
 
 **The reader learns:**
-- Podman, devcontainers, compose.yaml: one-click environment setup, production-matching database locally
+- Rust toolchain installed via rustup on the host; Podman and compose.yaml for a production-matching PostgreSQL container
 - Axum basics: async fn handlers, Router, Tokio runtime. `async`/`await` fundamentals.
 - Structured logging with `tracing`: spans, events, `tracing-subscriber` for human-readable (dev) and JSON (prod) output
 - LinkML basics: classes, attributes, enums in YAML. panschema: generating Rust types, SQL DDL, and SHACL shapes from the schema. The scimantic ontology as a versioned dependency.
@@ -865,9 +866,7 @@ t2t/
 ├── schema/                       # Local schema artifacts (generated from scimantic-ontology)
 │   ├── t2t.yaml                  # App-specific schema extensions
 │   └── generated/                # panschema output (Rust types, SQL DDL, SHACL shapes, JSON Schema)
-├── .devcontainer/
-│   └── devcontainer.json         # VS Code devcontainer (full toolchain + PostgreSQL + Oxigraph)
-├── compose.yaml                  # Podman/Docker Compose (PostgreSQL for local dev)
+├── compose.yaml                  # Podman Compose (PostgreSQL for local dev)
 ├── Containerfile                 # Production image (multi-stage, hardened in ch12)
 ├── .github/
 │   └── workflows/

@@ -9,5 +9,8 @@ book/tools/*/target/
 book/src/quiz/quiz-embed.iife.js
 book/src/quiz/style.css
 
+# Environment variables (secrets, database URLs)
+.env
+
 # OS files
 .DS_Store
