@@ -30,3 +30,23 @@ Tracked gaps in tools used by the book and Scimantic app. Created and updated by
 - **Tracking issue:** padamson/t2t#3
 - **Chapter:** All chapters (admonitions throughout)
 - **Status:** Resolved — merged upstream and released as v0.7.3
+
+## 2026-04-19 — mdbook-listings: Managed code listings for mdbook
+- **Category:** New tool
+- **Repo:** padamson/mdbook-listings
+- **Crates.io:** mdbook-listings (to be reserved on v0.1.0 publish)
+- **Tracking issue:** padamson/t2t#6
+- **Initial issue:** padamson/mdbook-listings#1
+- **Chapter:** Ch 2 (Pipeline First), Phase 1 (The Compose File)
+- **Status:** Open
+- **Workaround:** Numbered list after the code block (no freezing; `{{#include}}` points at live source)
+
+## 2026-04-18 — scimantic-cli: Initial v0.1.0 release
+- **Category:** New tool
+- **Repo:** padamson/scimantic-cli
+- **Crates.io:** [scimantic](https://crates.io/crates/scimantic) v0.1.0 (namespace reserved)
+- **Tracking issue:** padamson/t2t#5
+- **Initial issue:** padamson/scimantic-cli#1
+- **Chapter:** Ch 2 (Pipeline First), Phase 1
+- **Status:** Released — v0.1.0 published 2026-04-19; Ch 2 Phase 1 updated to include `cargo install scimantic` step
+- **Workaround:** None

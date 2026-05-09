@@ -1,0 +1,31 @@
+# Local development services for Scimantic.
+# Matches the production PostgreSQL version (RDS PostgreSQL 16).
+#
+# Usage:
+#   podman compose up -d    # start services
+#   podman compose down      # stop services
+#   podman compose down -v   # stop and delete data
+
+services:
+  db:
+    # CALLOUT: postgres-version Pin the exact major version that AWS RDS runs in production. Not `latest`, not `15`. Your local database matches what serves real users — no "but it worked with SQLite in dev" surprises.
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: scimantic
+      POSTGRES_PASSWORD: scimantic
+      POSTGRES_DB: scimantic
+    ports:
+      - "5432:5432"
+    volumes:
+      # CALLOUT: pgdata-volume Your data persists across restarts. `podman compose down` stops the container but keeps your data; `podman compose down -v` deletes everything and starts fresh.
+      - pgdata:/var/lib/postgresql/data
+    # CALLOUT: healthcheck The container reports whether PostgreSQL is actually ready to accept connections, not just whether the container process is running. Matters when other services depend on the database being up.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scimantic"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

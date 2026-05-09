@@ -62,16 +62,16 @@ Each chapter sends you to the Practice Guide for the theory, then brings you bac
 
 **Required:**
 - Basic Rust knowledge (you've read the first half of [*The Rust Programming Language*](https://doc.rust-lang.org/book/))
+- Basic `git` knowledge: cloning, committing, pushing, pulling, and working with remote repositories. If you need a refresher, see [*Pro Git*](https://git-scm.com/book/en/v2) (free, authoritative). 
+- A GitHub account with [SSH keys configured](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) and a working knowledge of GitHub (see [GitHub's getting started docs](https://docs.github.com/en/get-started))
 - A terminal and a text editor of your choice
-- Git
-- A GitHub account
-- Podman (or Docker) installed locally
 
-**Installed during the book:**
+**Installed locally during the book:**
 - The Rust toolchain (via `rustup`)
 - `cargo-leptos`, `sqlx-cli`, `cargo-nextest`, `cargo-audit`, `cargo-deny`, `cargo-vet`, `cargo-mutants`, `prek`
 - `panschema` for schema-driven code generation
-- Oxigraph (Rust-native RDF triple store, installed during the book)
+- Podman (or Docker)
+- Oxigraph (Rust-native RDF triple store)
 - Hugo, Go, and Node.js (for the MinimumCD Practice Guide, installed above)
 
 **Not required:**

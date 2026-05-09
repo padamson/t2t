@@ -1,29 +1,188 @@
 # Pipeline First
 
-<!-- Draft this chapter alongside building the app -->
+```admonish reference title="Reading Assignment"
+If you haven't already, re-read [localhost:1313/docs/migrate-to-cd/greenfield/](http://localhost:1313/docs/migrate-to-cd/greenfield/), specifically the "Feature Zero" section. This chapter is Feature Zero.
+```
 
-<!-- This chapter has five phases, each ending with a concrete checkpoint. -->
-<!-- The greenfield checklist items from Ch 1 are checked off in batches at each checkpoint. -->
+```admonish tip title="Practice Guide Running?"
+The reading assignment links point to `localhost:1313`. Make sure your local MinimumCD Practice Guide is running: `cd minimumcd-practice-guide && npm start`. If you haven't cloned it yet, see [Before You Begin](./ch00-before-you-begin.md#set-up-the-minimumcd-practice-guide).
+```
 
-<!-- ============================================================ -->
-<!-- PHASE 1: Local Development Environment -->
-<!-- ============================================================ -->
+You read the greenfield guide. Its core message: the delivery pipeline is the first thing you build. Before the data model, before the UI, before even a "hello world" endpoint.
 
-<!-- The reader builds: -->
-<!-- - VS Code devcontainer with full Rust toolchain (.devcontainer/devcontainer.json) -->
-<!-- - Podman (or Docker) as the container runtime -->
-<!-- - Containerized PostgreSQL via compose.yaml, matching the AWS production version -->
+That's counterintuitive. You're excited to build Scimantic. You want to define the knowledge graph schema, write your first Leptos component, see something in a browser. Instead, you're going to spend this entire chapter on infrastructure: containers, CI/CD, Terraform, security scanning. By the end, you'll have a URL that returns "ok" and nothing else.
 
-<!-- The reader learns: -->
-<!-- - Podman: daemonless, rootless, open source (no Docker Desktop licensing) -->
-<!-- - Devcontainers: one-click environment setup, reproducible across machines -->
-<!-- - compose.yaml: defining services, matching production database version locally -->
+Why? Because every decision you make this chapter is trivial to set up in an empty project and expensive to retrofit later. The greenfield guide is explicit: "Every one of these is trivial to add to an empty project and expensive to retrofit into a mature codebase." We take that literally.
 
-<!-- Checkpoint: `podman compose up`, connect to PostgreSQL, confirm it's running -->
-<!-- Greenfield checklist items checked off: -->
-<!--   - VS Code devcontainer provides a one-click setup with full Rust toolchain -->
-<!--   - Podman (or Docker) is the container runtime -->
-<!--   - PostgreSQL runs in a container via compose.yaml, matching the production version -->
+This chapter has five phases, each ending with a concrete checkpoint where you run something and see it work. At each checkpoint, we'll revisit the greenfield checklist from Chapter 1 and check off what we completed.
+
+```admonish info title="Why phases here, but not later?"
+Phases are a Chapter 2 device, not a book-wide convention. This chapter is unusual: it's "Feature Zero," sequential infrastructure setup before any user-visible feature ships. The phases give us five natural checkpoints — Podman running, server responding, schema generating, pipeline green, production deployed — that each end with the reader running something and seeing it work.
+
+Starting in Chapter 3, the structure shifts. Chapters 3 through 6 each add a layer of the first vertical slice (database, frontend, end-to-end test, REST API), with one linear flow per chapter. Starting in Chapter 7, every chapter is its own user-story slice (Evidence, Hypotheses, Experiments, Results) and the chapter-internal pacing follows the outside-in TDD pattern from the [user stories table](./ch01-design-decisions.md#from-user-stories-to-vertical-slices) in Chapter 1.
+
+If "phase" feels heavy, that's because it is — it's load-bearing for this chapter only.
+```
+
+## Phase 1: Local Development Environment
+
+Before you write any code, you need a reproducible development environment. "It works on my machine" is the first thing CD eliminates. By the end of this phase, every reader (regardless of operating system) will have identical tooling and an identical PostgreSQL database.
+
+We'll set up five things:
+
+1. An **empty GitHub repository** for your Scimantic project, cloned locally.
+2. The **Rust toolchain** via `rustup`, installed directly on your host.
+3. The **Scimantic CLI**, installed from crates.io.
+4. A **container runtime** (Podman) to run services locally.
+5. A **compose file** that starts PostgreSQL in a container, matching the version we'll deploy to production.
+
+### Create the Repository
+
+On [github.com](https://github.com), click **New repository**. Name it `scimantic` (or whatever you prefer), mark it public or private per your preference, and leave everything else unchecked — no README, no `.gitignore`, no license. We'll add those deliberately as the chapter progresses, each at the moment we have a reason for it.
+
+Clone it locally:
+
+```bash
+git clone git@github.com:YOUR-USERNAME/scimantic.git
+cd scimantic
+```
+
+The `compose.yaml` we create shortly will be the first file in this repository. From this point on, every command in the book assumes you're working inside this directory.
+
+```admonish info
+This book expects you to be comfortable with git basics and GitHub. If you need a refresher, see the [Before You Begin](./ch00-before-you-begin.md#what-you-need) section for pointers.
+```
+
+### The Rust Toolchain
+
+As mentioned in [Before You Begin](./ch00-before-you-begin.md#what-you-need), you are expected to have some basic knowledge of Rust (*e.g.,* you've read the first half of [*The Rust Programming Language*](https://doc.rust-lang.org/book/)), so you likely have Rust installed via the official toolchain manager, `rustup`. If neither is true, I recommend you go check out [*The Rust Programming Language*](https://doc.rust-lang.org/book/)) and, in the process, install Rust via [rustup](https://rustup.rs/). `rustup` handles multiple Rust versions, lets you pin a project to a specific one, and manages the components we'll use throughout the book (the stable compiler, `rustfmt`, `clippy`, and the WebAssembly target).
+
+After installation, run the following commands in the terminal:
+
+```bash
+rustc --version
+cargo --version
+```
+
+You should see `rustc 1.95.0` and `cargo 1.95.0` or later (they ship together, so the version numbers always match). Chapter 3 will pin the project's MSRV (minimum supported Rust version) so the build fails on older toolchains.
+
+We'll install additional targets and cargo tools (`cargo-leptos`, `sqlx-cli`, `cargo-nextest`, the WebAssembly target, and more) as each chapter needs them.
+
+### The Scimantic CLI
+
+With `cargo` on your path, you can install the Scimantic CLI from [crates.io](https://crates.io/crates/scimantic):
+
+```bash
+cargo install scimantic
+```
+
+Verify it installed correctly:
+
+```bash
+scimantic --version
+```
+
+You should see `scimantic 0.1.x`. By the end of the book, you'll use the scimantic CLI to log into a running Scimantic instance, manage data in your knowledge graph, and query the knowledge graph from the command line.
+
+```admonish info
+If you are an "early adopter" of this book, the scimantic CLI will have very minimal functionality (*e.g.,* it prints its version and nothing else). I am dogfooding the CLI as I write the book, and features land chapter by chapter as the REST API gains endpoints.
+```
+
+```admonish info
+`cargo install` downloads the `scimantic` crate from crates.io, compiles it, and places the binary in `~/.cargo/bin/` (which is on your PATH after installing Rust). This is how Rust tools ship. Later chapters use the same command to install `cargo-leptos`, `sqlx-cli`, and other tools.
+```
+
+### Why Podman?
+
+You may already have Docker installed. That's fine; everything in this book works with Docker too. We recommend Podman for three reasons:
+
+1. **Open source.** Podman is [Apache-2.0 licensed](https://github.com/containers/podman/blob/main/LICENSE) with no commercial licensing restrictions. Docker Desktop [requires a paid subscription](https://docs.docker.com/subscription/desktop-license/) for companies with more than 250 employees or $10M+ in annual revenue. Podman has no such restriction.
+2. **Daemonless.** The [Docker engine](https://docs.docker.com/engine/security/#docker-daemon-attack-surface) runs a persistent background daemon, and the client talks to it over a socket that historically required root. Podman [runs containers directly as the invoking user](https://podman.io/) — no daemon, no root by default, smaller attack surface.
+3. **Drop-in compatible.** [`podman compose`](https://docs.podman.io/en/latest/markdown/podman-compose.1.html) reads the same `compose.yaml` files as `docker compose`. Every command in this book works with either tool. If you prefer Docker, substitute `docker` wherever you see `podman`.
+
+Install Podman if you don't have it according to the [Podman Installation Instructions](https://podman.io/docs/installation) for your operating system.
+
+Also, verify it's working according to your OS's instructions. For MacOS, create and start your first Podman machine and verify the installation information:
+
+```bash
+podman machine init
+podman machine start
+podman info
+```
+
+
+
+### The Compose File
+
+Create `compose.yaml` in the repository root:
+
+```yaml
+{{#include listings/compose-yaml-ch02-phase1.yaml}}
+```
+
+A few choices in this file are worth pausing on. Click any badge inline with the code above to read why we made that choice — `postgres:16` over `latest`, the explicit healthcheck, and the named `pgdata` volume.
+
+```admonish warning
+The username and password (`scimantic`/`scimantic`) are for local development only. Production credentials are managed through environment variables and AWS Secrets Manager, never committed to the repository. We'll set that up in Phase 5.
+```
+
+Start the database:
+
+```bash
+podman compose up -d
+```
+
+The `-d` flag runs it in the background. The first time, Podman will pull the PostgreSQL 16 image (~150 MB). Subsequent starts are instant.
+
+Verify it's running:
+
+```bash
+podman compose ps
+```
+
+You should see the `db` service with status `Up` (and info on how long it's been up). 
+
+Now connect to it:
+
+```bash
+psql postgres://scimantic:scimantic@localhost:5432/scimantic -c "SELECT version();"
+```
+
+```admonish tip
+If you don't have `psql` installed locally, you can use the one inside the container:
+
+    podman compose exec db psql -U scimantic -c "SELECT version();"
+```
+
+You should see `PostgreSQL 16.x` in the output. That's the same major version that will run in production on AWS RDS.
+
+Stop the database when you're done:
+
+```bash
+podman compose down
+```
+
+### Phase 1 Checkpoint
+
+You now have:
+
+- **A GitHub repository** for your Scimantic project, cloned locally.
+- **The Rust toolchain** (stable) installed on your host.
+- **The Scimantic CLI** installed from crates.io.
+- **Podman** installed and running.
+- **PostgreSQL 16** running in a container, matching the production version on AWS RDS.
+
+Let's check off the greenfield checklist items we completed:
+
+- [x] GitHub repository created and cloned locally *(done)*
+- [x] Rust toolchain installed on the host via `rustup` *(done)*
+- [x] Scimantic CLI installed from crates.io *(done)*
+- [x] Podman is the container runtime *(done)*
+- [x] PostgreSQL runs in a container via `compose.yaml`, matching the production version *(done)*
+
+No code yet, just a reproducible environment where every reader starts from the same place.
+
+Next, we write our first Rust code: a health-check endpoint that proves the server can start.
 
 <!-- ============================================================ -->
 <!-- PHASE 2: Hello-World Endpoint + Build -->

@@ -416,7 +416,9 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 
 ### Development Environment
 
+- [ ] GitHub repository created and cloned locally *(Ch 2)*
 - [ ] Rust toolchain installed on the host via `rustup` *(Ch 2)*
+- [ ] Scimantic CLI installed from crates.io via `cargo install scimantic` *(Ch 2)*
 - [ ] Podman is the container runtime *(Ch 2)*
 - [ ] PostgreSQL runs in a container via `compose.yaml`, matching the production version *(Ch 2)*
 - [ ] Oxigraph runs embedded in the application binary (no separate container needed) *(Ch 2)*

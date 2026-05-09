@@ -16,6 +16,9 @@
 <!-- - SQLx: what it is, how it differs from an ORM, sqlx-cli for migrations -->
 <!-- - Compile-time query checking with query_as! -->
 <!-- - Service layer pattern: domain logic separated from any web framework -->
+<!-- - Hexagonal architecture callout: traits as ports (QuestionRepository, KnowledgeGraph), -->
+<!--   adapters (PostgresQuestionRepository, OxigraphKnowledgeGraph). Name the pattern here -->
+<!--   after the reader has built it — "what we just built has a name." -->
 <!-- - How panschema-generated types flow into both database layers -->
 <!-- - Result<T, E> and the ? operator in practice -->
 <!-- - Production error handling: thiserror for domain error types, error context/chains, mapping errors to HTTP status codes -->

@@ -29,6 +29,11 @@ icon = "./images/help-circle.svg"
 color = "#7c4dff"
 title = "Check Your Understanding"
 
+[preprocessor.listings]
+command = "mdbook-listings"
+before = ["admonish", "links"]
+
 [output.html]
-additional-css = ["./mdbook-admonish.css"]
+additional-css = ["./mdbook-admonish.css", "./mdbook-listings.css"]
 git-repository-url = "https://github.com/padamson/t2t"
+additional-js = ["./mdbook-listings.js"]

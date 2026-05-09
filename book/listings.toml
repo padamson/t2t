@@ -1,0 +1,7 @@
+version = 1
+
+[[listing]]
+tag = "compose-yaml-ch02-phase1"
+source = "../compose.yaml"
+frozen = "src/listings/compose-yaml-ch02-phase1.yaml"
+sha256 = "a11a015fcfd2d1defedc80e628232d7b6df734346408d4441f177620a662ec17"
