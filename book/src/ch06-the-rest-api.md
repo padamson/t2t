@@ -22,3 +22,7 @@
 <!-- - API versioning strategy: /api/v1/ from the start, deprecation headers -->
 <!-- - Traits in practice: service layer interface consumed by Leptos and REST handlers -->
 <!-- - SPARQL endpoint: exposing a read-only SPARQL endpoint for power users and integrations -->
+<!-- - **Workspace extraction (second split):** extract `app-api` for REST request/response -->
+<!--   types that need to be shared with external consumers (the scimantic CLI, future -->
+<!--   Jupyter integrations). The CLI repo can then `cargo add app-api` (or pin to git) -->
+<!--   instead of duplicating types. Builds on the workspace conversion from Ch 3. -->

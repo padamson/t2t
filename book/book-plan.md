@@ -340,15 +340,27 @@ The dual-interface, dual-database design creates a natural teaching progression:
 
 ### Schema-Driven Development: panschema + LinkML
 
-- **LinkML:** A YAML-based modeling language for defining data structures. The Scimantic domain model is defined in the `scimantic-ontology` repo as a versioned LinkML schema. In ACD terms, this is architecture represented as a delivery artifact — versioned, machine-readable, and enforced by the pipeline.
+- **LinkML:** A YAML-based modeling language for defining data structures. Scimantic uses LinkML for *all* persisted data — both the scientific knowledge structure and the app's own infrastructure. In ACD terms, every schema is architecture represented as a delivery artifact: versioned, machine-readable, and enforced by the pipeline.
 - **panschema:** The author's own Rust CLI tool. The universal Rust data modeling tool, handling vocabularies, application data models, and ontologies. Reads LinkML schemas and generates:
   - **Rust structs** with `serde::Serialize`, `serde::Deserialize`, `sqlx::FromRow`, and `utoipa::ToSchema` derives.
   - **SQL DDL** for SQLx migrations (PostgreSQL app tables).
   - **SHACL shapes** for Oxigraph validation (knowledge graph constraints).
   - **JSON Schema** for API contract validation.
   - **Visualizations** for documentation and ontology exploration.
-- **Ontology as a separate repo:** The `padamson/scimantic-ontology` repo contains the LinkML schema. The t2t app depends on it as a versioned artifact. This separates the ontology (which may be used by multiple tools) from the application.
-- **Why this matters for ACD:** The ACD framework requires consistency between intent, tests, implementation, and architecture. The LinkML schema *is* the architectural intent for the data model. panschema enforces consistency by generating the implementation artifacts from it. When the schema changes, the pipeline regenerates types, migrations, SHACL shapes, and any inconsistency breaks the build.
+
+#### Two schema sources, one tool
+
+Scimantic consumes LinkML from two distinct sources, and panschema runs over each:
+
+- **External: `padamson/scimantic-schema`.** The canonical scientific ontology — Question, Evidence, Hypothesis, Experiment, Result, plus the process classes and cross-cutting concerns. Designed with its own discipline: BFO/CCO grounding (in progress), PROV-to-BFO alignment, URREF for uncertainty, OA for selectors. The t2t app declares it as a managed dependency in `panschema.toml` (`{ version = "x.y.z", source = "github:padamson/scimantic-schema" }`). panschema fetches it into a local cache (cargo-style), pins the checksum in `panschema.lock`, and reads it during `panschema generate`. Drives Rust types for the scientific entities and SHACL shapes loaded into Oxigraph at startup.
+
+- **Local: `app/schema/scimantic-server.yaml`.** The app's own infrastructure schema — User, Session, Organization, Membership, ApiToken, AuditLog, etc. These are SaaS / multi-tenancy concerns specific to the platform; they have no business in the scientific ontology. Lives in the t2t repo because its design is product-driven, not domain-driven. Drives Rust types and SQL DDL for PostgreSQL.
+
+This split is intentional. The scientific ontology is a serious artifact with its own design workstream, evolving on its own cadence with the research community in mind. The app-state schema is small, app-specific, and driven by hosting needs. Conflating them either pollutes the ontology with SaaS concerns or pretends the app-state model deserves the same design treatment as the ontology — neither is honest.
+
+The reader gets a coherent pedagogical arc: they author the local schema themselves (small, easy to grok), and they consume the external schema as a versioned dependency (large, designed elsewhere). Same tool, two contexts. By the end of the book they've used LinkML at both scales and could apply panschema to a totally different domain.
+
+- **Why this matters for ACD:** The ACD framework requires consistency between intent, tests, implementation, and architecture. *Both* LinkML schemas are architectural intent for the data model. panschema enforces consistency by generating the implementation artifacts from each. When either schema changes, the pipeline regenerates types, migrations, SHACL shapes, and any inconsistency breaks the build.
 
 ### OpenAPI: utoipa + utoipa-axum + utoipa-swagger-ui
 
@@ -561,7 +573,7 @@ Opening argument: Starting with CD is dramatically easier than migrating to it. 
 
 - The ACD framework requires architecture to be represented as versioned delivery artifacts. For data modeling, this means the schema should be the source of truth — not the Rust code, not the SQL, not the OpenAPI spec, not the SPARQL queries.
 - Introduce LinkML as the schema language: YAML-based, human-readable, tool-friendly. Define classes, attributes, enums, and relationships in one place.
-- Introduce the scimantic ontology as a separate versioned artifact (`padamson/scimantic-ontology`). The application depends on it — this is ACD's "architecture as delivery artifact" principle in action.
+- Introduce the scimantic ontology as a separate versioned artifact (`padamson/scimantic-schema`). The application depends on it — this is ACD's "architecture as delivery artifact" principle in action.
 - Introduce panschema as the tool that enforces consistency: from a single LinkML schema, generate Rust structs (with serde, sqlx, and utoipa derives), SQL DDL for migrations, SHACL shapes for knowledge graph validation, and JSON Schema for contract validation.
 - Contrast with the typical approach: hand-maintaining separate struct layers (API DTOs, domain models, DB row types, graph shapes) connected by manual implementations. That works, but consistency depends on developer discipline. Schema-driven development makes the pipeline enforce it.
 - Frame this as a natural extension of the same philosophy behind compile-time query checking (SQLx) and compile-time OpenAPI generation (utoipa) — the theme is: catch inconsistencies at build time, not in production.
@@ -643,7 +655,7 @@ This chapter has five phases, each ending with a concrete checkpoint where the r
 
 **Phase 2: Hello-World Endpoint + Build.** Axum health-check endpoint, `cargo-leptos` project structure, structured logging with `tracing`. *Checkpoint: `curl localhost:3000/health` returns "ok" with a log line.*
 
-**Phase 3: Schema Foundation.** LinkML schema from `scimantic-ontology` for Question and QuestionStatus, `panschema generate` produces Rust types, SQL DDL, and SHACL shapes. *Checkpoint: `cargo build` passes with generated types.*
+**Phase 3: Schema Foundation.** Reader authors `app/schema/scimantic-server.yaml` (the LOCAL LinkML schema) with a tiny User class, runs `panschema generate`, sees the generated Rust types appear. The external scientific ontology (`scimantic-schema`) is mentioned as the second schema source but isn't pinned until Ch 3 (where it lands alongside the database work it serves). *Checkpoint: `cargo build` passes with the User type generated from the local schema.*
 
 **Phase 4: CI Pipeline.** GitHub Actions workflow with rustfmt, clippy, cargo-nextest, cargo-audit, cargo-deny, cargo-vet, cargo-mutants (`--in-diff` on every push, full sweep nightly). Pre-commit hooks via prek mirroring CI (including private key detection). Dependabot, GitHub code scanning, secret scanning. Scheduled weekly security workflow. SLSA provenance attestation on releases. Schema generation step verifies consistency. *Checkpoint: push to trunk, pipeline goes green.*
 
@@ -765,7 +777,7 @@ The exact chapter breakdown for 7+ will be determined after the first six chapte
 | Repo | Visibility | Purpose |
 |---|---|---|
 | `t2t` | Public | Monorepo: book manuscript (mdbook/Markdown), planning docs, figures, and the Leptos + Axum application code. Simultaneously the open source product and the code readers follow along with. |
-| `scimantic-ontology` | Public | LinkML schema for the scimantic domain (Questions, Evidence, Hypotheses, Experiments, Results). Versioned artifact consumed by t2t as a dependency. |
+| `scimantic-schema` | Public | LinkML schema for the scimantic domain (Questions, Evidence, Hypotheses, Experiments, Results). Versioned artifact consumed by t2t as a dependency. |
 | `panschema` | Public | Universal Rust data modeling tool. Generates Rust types, SQL DDL, SHACL shapes, JSON Schema, and visualizations from LinkML. (Author's project, dogfooded in the book.) |
 | `theoria` | Public | Rust-native component explorer for Leptos (author's project, dogfooded in the book). |
 | `dokime` | Public | Rust-native component testing framework for Leptos (author's project, dogfooded in the book). |
@@ -815,25 +827,42 @@ To jump in at a specific chapter, check out the corresponding tag.
 
 ### Repository Layout (`t2t`)
 
-Monorepo with three top-level directories, mirroring the ACD principle of everything-as-code and versioned together:
+Monorepo with three top-level directories, mirroring the ACD principle of everything-as-code and versioned together. **t2t at the repo level is a monorepo, not a Cargo workspace** — `app/` and the various book/tooling Cargo projects (e.g., `book/tools/mdbook-quiz-pdf/`) are independent crates that happen to coexist.
+
+**`app/` itself starts as a single Cargo crate** (cargo-leptos default) in Ch 2 Phase 2, then is **converted to a Cargo workspace in Ch 3** when the trait-based service layer (hexagonal architecture) makes the workspace split earn its keep:
+
+- `app/core/` — domain types and trait definitions (ports). No framework deps.
+- `app/server/` — runnable Axum binary + Leptos UI (cargo-leptos target). Adapters live here initially.
+- `app/api/` (added in Ch 6) — REST request/response types shared with external consumers (the `scimantic` CLI, future Jupyter integrations).
+
+The single-crate-then-workspace progression is deliberate: it gives the reader a concrete teaching moment for *why* you'd extract a workspace member, instead of presenting the workspace as a fait accompli on day one.
+
+The expanded layout below shows the post-Ch 3 workspace structure. In Ch 2 Phase 2, `app/` is a flat single-crate version of this.
 
 ```
 t2t/
-├── app/                          # Leptos + Axum application
-│   ├── Cargo.toml
-│   ├── src/
-│   │   ├── main.rs               # Axum server setup, route mounting
-│   │   ├── app.rs                # Leptos root component
-│   │   ├── components/           # Leptos UI components
-│   │   ├── pages/                # Leptos page components (routes)
-│   │   ├── server/               # Server functions (Leptos #[server])
-│   │   ├── api/                  # REST API handlers (utoipa-annotated)
-│   │   ├── services/             # Shared service layer (domain logic)
-│   │   ├── models/               # Data types (shared by Leptos + API)
-│   │   ├── db/                   # SQLx queries and migrations (PostgreSQL)
-│   │   └── graph/                # Oxigraph queries and SHACL validation
+├── app/                          # Leptos + Axum application (Cargo workspace from Ch 3)
+│   ├── Cargo.toml                # Workspace root
+│   ├── core/                     # Domain types + trait ports (added in Ch 3)
+│   │   ├── Cargo.toml
+│   │   └── src/
+│   ├── server/                   # Axum server + Leptos UI (the runnable binary)
+│   │   ├── Cargo.toml
+│   │   └── src/
+│   │       ├── main.rs               # Axum server setup, route mounting
+│   │       ├── app.rs                # Leptos root component
+│   │       ├── components/           # Leptos UI components
+│   │       ├── pages/                # Leptos page components (routes)
+│   │       ├── server/               # Server functions (Leptos #[server])
+│   │       ├── api/                  # REST API handlers (utoipa-annotated)
+│   │       ├── services/             # Service layer (domain logic / adapter glue)
+│   │       ├── db/                   # SQLx queries and migrations (PostgreSQL adapter)
+│   │       └── graph/                # Oxigraph queries and SHACL validation (graph adapter)
+│   ├── api/                      # REST types shared with CLI / external consumers (added in Ch 6)
+│   │   ├── Cargo.toml
+│   │   └── src/
 │   ├── migrations/               # SQLx database migrations
-│   ├── tests/                    # Integration and E2E tests
+│   ├── tests/                    # Workspace-level integration and E2E tests
 │   │   ├── integration/
 │   │   ├── graph/                # Oxigraph/SPARQL tests
 │   │   └── e2e/                  # playwright-rust E2E tests
@@ -863,7 +892,7 @@ t2t/
 │       ├── compute/              # EC2 instances
 │       ├── database/             # Managed PostgreSQL
 │       └── networking/           # ALB, VPC, DNS
-├── schema/                       # Local schema artifacts (generated from scimantic-ontology)
+├── schema/                       # Local schema artifacts (generated from scimantic-schema)
 │   ├── t2t.yaml                  # App-specific schema extensions
 │   └── generated/                # panschema output (Rust types, SQL DDL, SHACL shapes, JSON Schema)
 ├── compose.yaml                  # Podman Compose (PostgreSQL for local dev)
@@ -890,11 +919,11 @@ The `book/` directory within the monorepo uses mdbook (Rust) for all chapter con
 - **Code inclusion:** Code snippets are included directly from `app/src/` via mdbook's `{{#include ../../app/src/file.rs:anchor_name}}` directive. In the Rust source files, anchors are placed inside comments (`// ANCHOR: name` / `// ANCHOR_END: name`). This follows the approach used by *The Rust Programming Language* book. No separate `listings/` directory — the monorepo structure makes direct inclusion possible.
 - **Chapter tags as snapshots:** Each chapter's code state is captured by a git tag on the monorepo. The reader can check out any tag to see both the manuscript and the application code at that point in the book's progression.
 - **Output formats:** `mdbook build` produces both HTML (the primary, freely accessible version) and print-quality PDF via mdbook-typst-pdf (Rust-based, using the Typst typesetting engine). PDF is generated on every push in CI and attached to GitHub Releases on tag. EPUB via mdbook-epub or Pandoc conversion if needed.
-- **Admonitions:** mdbook-admonish plugin (using fork `padamson/mdbook-admonish` until upstream merges PR #235 — tracked in `dogfood-gaps.md`).
-- **Quizzes:** mdbook-quiz plugin (using fork `padamson/mdbook-quiz` until upstream merges PR #62 — tracked in `dogfood-gaps.md`).
-- **Code callouts:** Planned as a custom mdbook preprocessor (Rust). Until then, use numbered lists after code blocks keyed to line numbers.
+- **Admonitions:** mdbook-admonish plugin (using fork `padamson/mdbook-admonish` until upstream merges PR #235).
+- **Quizzes:** mdbook-quiz plugin (using fork `padamson/mdbook-quiz` until upstream merges PR #62).
+- **Code listings:** mdbook-listings preprocessor (Rust, in development) for inline code annotations and versioned freezing of source files.
 - **Code testing:** `mdbook test` compiles and runs Rust code blocks, verifying all examples work. This is a major advantage over non-Rust toolchains.
-- **Dogfooding:** When mdbook or its plugins lack features, the approach is to fork/fix/contribute rather than switch to non-Rust alternatives. Gaps are tracked via `/blocker` and `/audit-dogfood` skills.
+- **Dogfooding:** When mdbook or its plugins lack features, the approach is to fork/fix/contribute rather than switch to non-Rust alternatives.
 
 ### Writing Workflow
 
@@ -962,7 +991,7 @@ The CLI tool, Jupyter integration, VS Code extension, and subscription features 
 - **cargo-leptos:** https://github.com/leptos-rs/cargo-leptos
 - **cargo-nextest:** https://nexte.st
 - **panschema:** https://github.com/padamson/panschema
-- **scimantic-ontology:** https://github.com/padamson/scimantic-ontology
+- **scimantic-schema:** https://github.com/padamson/scimantic-schema
 - **theoria:** https://github.com/padamson/theoria
 - **dokime:** https://github.com/padamson/dokime
 - **Tailwind CSS v4:** https://tailwindcss.com
@@ -999,4 +1028,4 @@ The CLI tool, Jupyter integration, VS Code extension, and subscription features 
 - [ ] **ACD tooling maturity:** The ACD section of MinimumCD is relatively new. Stay aligned with updates as the framework evolves.
 - [ ] **Oxigraph production deployment:** Oxigraph is embeddable (in-process) for the book. Determine whether a separate Oxigraph server is needed for production scale, and whether that changes the Terraform/deployment story.
 - [ ] **SHACL validation performance:** Measure the overhead of SHACL validation on every write to the knowledge graph. Determine whether validation should be synchronous or deferred.
-- [ ] **scimantic-ontology versioning:** Define the contract between the ontology repo and the t2t app. How does a breaking ontology change flow through the pipeline?
+- [ ] **scimantic-schema versioning:** Define the contract between the ontology repo and the t2t app. How does a breaking ontology change flow through the pipeline?

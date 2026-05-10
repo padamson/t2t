@@ -154,7 +154,9 @@ Other ecosystems have partially solved this. Prisma gives TypeScript developers 
 
 The ACD framework requires that architecture be represented as versioned delivery artifacts. For data modeling, this means the schema should be the source of truth, not the Rust code, not the SQL, not the OpenAPI spec.
 
-Scimantic's domain model has two homes. The scientific ontology — the classes, relationships, and constraints that define what a Question, Evidence, Hypothesis, Experiment, and Result *are* — lives in the [scimantic-ontology](https://github.com/padamson/scimantic-ontology) repo as a versioned [LinkML](https://linkml.io/) schema. The application data model (users, sessions, app configuration) lives in the main repo. Both are YAML-based, and both flow through the same tool.
+Scimantic's domain model has two homes. The scientific ontology — the classes, relationships, and constraints that define what a Question, Evidence, Hypothesis, Experiment, and Result *are* — lives in the [scimantic-schema](https://github.com/padamson/scimantic-schema) repo as a versioned [LinkML](https://linkml.io/) schema. The application data model (users, sessions, organizations, API tokens, audit logs) will live in `app/schema/scimantic-server.yaml` here in the main repo. Both are YAML-based, both flow through the same tool, and both are versioned alongside the code that consumes them.
+
+This split is intentional: the scientific ontology is a serious artifact with its own design discipline (BFO/CCO grounding in progress, PROV-to-BFO alignment, URREF for uncertainty modeling) and evolves on its own cadence with the research community in mind. The app-state schema is small, app-specific, and driven by hosting needs (multi-tenancy, auth, compliance). Conflating them would either pollute the ontology with SaaS concerns or pretend the app-state model deserves the same design treatment as the ontology — neither is honest. You'll author the local schema yourself, growing it chapter by chapter as features land. You'll consume the external schema as a versioned dependency, the way you'd consume any other library — and the way real production apps consume serious ontologies.
 
 Here's what a core entity looks like in LinkML:
 
@@ -268,7 +270,8 @@ Every technology choice in this book maps back to a Continuous Delivery constrai
 | **playwright-rust** | E2E testing in Rust. The testing tool is written in the same language as the application. The entire testing story (unit, integration, E2E) is Rust. |
 | **cargo-mutants** | Tests must demonstrate they catch regressions. Code coverage measures what runs; mutation testing measures what's *verified*. Incremental on every push; full sweep on a schedule. |
 | **panschema + LinkML** | The data model is a versioned architecture artifact. The pipeline generates and verifies all downstream representations: Rust types, SQL DDL, SHACL shapes, JSON Schema. |
-| **scimantic-ontology** (separate repo) | The domain ontology is a versioned artifact with its own release cycle. The app depends on a pinned version. Ontology changes flow through the pipeline like any other dependency update. |
+| **scimantic-schema** (separate repo) | The scientific ontology is a versioned artifact with its own release cycle and design discipline (BFO/CCO grounding, PROV alignment). The app declares it as a managed dependency in `panschema.toml` and panschema fetches it from GitHub at the pinned version (cargo-style). Ontology changes flow through the pipeline like any other dependency update. |
+| **app/schema/scimantic-server.yaml** (local) | App-state models (User, Session, Organization, ApiToken, AuditLog) live in the main repo because their design is product-driven, not domain-driven. Same LinkML, same panschema; different scope and ownership. |
 | **cargo-deny** | Supply chain policy as code. License compliance, crate source vetting, and duplicate detection are pipeline gates, not afterthoughts. |
 | **cargo-vet** | Supply chain vetting with trusted audit imports. Every dependency verified by someone you trust (Mozilla, Google, ISRG). New, unvetted dependencies require explicit exemption. |
 | **Dependabot + GitHub Security** | Automated dependency updates and static analysis. Security scanning that doesn't depend on developer memory. |
@@ -430,7 +433,8 @@ Here's what we're going to build, adapted from the [greenfield checklist](http:/
 - [ ] All work integrates to trunk at least daily *(Ch 2)*
 - [ ] Deployment to staging is automated via Terraform + GitHub Actions *(Ch 2)*
 - [ ] LinkML schema is versioned in the repo; panschema generates types, migrations, and SHACL shapes in CI *(Ch 2)*
-- [ ] scimantic-ontology is a pinned dependency; ontology updates flow through the pipeline *(Ch 2)*
+- [ ] Local LinkML schema (`app/schema/scimantic-server.yaml`) authored, panschema generates Rust types *(Ch 2 Phase 3)*
+- [ ] scimantic-schema declared as a `panschema.toml` dependency; `panschema fetch && panschema generate` produces Rust types and SHACL shapes from the external ontology *(Ch 3)*
 - [ ] Structured logging with `tracing` from the first handler *(Ch 2)*
 - [ ] Pre-commit hooks mirror CI checks via `prek` *(Ch 2)*
 - [ ] First unit test exists and passes *(Ch 3)*
