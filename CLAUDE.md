@@ -16,7 +16,6 @@ Monorepo containing both the application and the book:
 
 The application built in this book is **Scimantic** — a scientific knowledge management platform. "Trunk to Theory" is the book; "Scimantic" is the product.
 - `CHANGELOG.md` — What changed in each version
-- `dogfood-gaps.md` — Tracked gaps in tools (created by `/blocker`)
 - `.github/workflows/` — CI: app build/test/deploy + book HTML/PDF/Pages
 
 ## Book toolchain
@@ -30,7 +29,7 @@ See `book/book-plan.md` Section 4 (Technology Stack) for the full stack. The boo
 
 ## Domain
 
-Scientific knowledge management based on scimantic concepts. Core entities follow the scientific workflow: Questions → Evidence → Hypotheses → Experiments → Results. Dual database architecture: Oxigraph (Rust-native RDF triple store) for the knowledge graph + PostgreSQL for app state (users, sessions). The scimantic ontology lives in a separate repo (`padamson/scimantic-ontology`).
+Scientific knowledge management based on scimantic concepts. Core entities follow the scientific workflow: Questions → Evidence → Hypotheses → Experiments → Results. Dual database architecture: Oxigraph (Rust-native RDF triple store) for the knowledge graph + PostgreSQL for app state (users, sessions). The scimantic ontology lives in a separate repo (`padamson/scimantic-schema`).
 
 ## Code inclusion
 
@@ -39,8 +38,8 @@ Chapters reference app source directly via `{{#include ../../app/src/file.rs:anc
 ## Key conventions
 
 - **Monorepo.** A PR that adds a feature updates both `app/` and `book/src/` in the same commit.
-- **No book references in public tool repos.** Public feature requests created by `/blocker` must stand on their own.
-- **Schema-driven development.** Data model in LinkML YAML; panschema generates types, SQL DDL, SHACL shapes, JSON Schema. The scimantic ontology (`padamson/scimantic-ontology`) is the authoritative schema source.
+- **No book references in public tool repos.** Public feature requests filed against author-maintained or third-party tools must stand on their own as generic requests.
+- **Schema-driven development.** Data model in LinkML YAML; panschema generates types, SQL DDL, SHACL shapes, JSON Schema. The scimantic ontology (`padamson/scimantic-schema`) is the authoritative scientific schema source; app-state schema lives locally at `app/schema/scimantic-server.yaml`.
 - **Rust-only toolchain.** Fork/fix/contribute rather than switching to non-Rust alternatives.
 - **Versioning.** Tags: `v0.y.0` = first draft of chapter `y`, `v0.y.z` = fixes/revisions to chapter `y` or earlier, `v1.0.0` = first edition. See `CHANGELOG.md`.
 
@@ -49,7 +48,7 @@ Chapters reference app source directly via `{{#include ../../app/src/file.rs:anc
 | Repo | Visibility | Role |
 |---|---|---|
 | `padamson/t2t` | Public | This repo |
-| `padamson/scimantic-ontology` | Public | LinkML schema for the scimantic domain |
+| `padamson/scimantic-schema` | Public | LinkML schema for the scimantic domain |
 | `padamson/panschema` | Public | Schema-driven dev tool (dogfooded) |
 | `padamson/playwright-rust` | Public | E2E testing framework (dogfooded) |
 | `padamson/theoria` | Public | Component explorer for Leptos (dogfooded) |
@@ -57,15 +56,6 @@ Chapters reference app source directly via `{{#include ../../app/src/file.rs:anc
 | `bdfinst/cd-migration` | Public | MinimumCD Practice Guide (pinned commit) |
 
 ## Custom skills
-
-### `/blocker [tool-name] <description>`
-Log a dogfooding blocker. Forks third-party tools, creates tracking issues, records in `dogfood-gaps.md`.
-
-### `/resume [issue-number|repo-name]`
-Check blocker status and resume where you left off.
-
-### `/audit-dogfood [chapter-number|file-path]`
-Review `app/` for invisible workarounds that should be features in dogfooded tools.
 
 ### `/book-pre-commit-review [file-path]`
 Review manuscript for plagiarism and LLM-tell patterns before committing.
