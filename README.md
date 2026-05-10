@@ -36,7 +36,7 @@ cargo install --git https://github.com/padamson/mdbook-listings --branch main --
 cargo install --path book/tools/mdbook-quiz-pdf
 ```
 
-`mdbook-quiz` and `mdbook-admonish` are installed from forks until upstream PRs for mdbook 0.5 support are merged ([quiz #62](https://github.com/cognitive-engineering-lab/mdbook-quiz/pull/62), [admonish #235](https://github.com/tommilligan/mdbook-admonish/pull/235)). `mdbook-listings` tracks `main` while it's pre-1.0; it'll switch to a crates.io install once v0.1.0 is published. Re-run the `mdbook-listings` install command to pick up new changes from upstream.
+`mdbook-quiz` and `mdbook-admonish` are installed from forks until upstream PRs for mdbook 0.5 support are merged ([quiz #62](https://github.com/cognitive-engineering-lab/mdbook-quiz/pull/62), [admonish #235](https://github.com/tommilligan/mdbook-admonish/pull/235)). `mdbook-listings` tracks `main` while it's pre-1.0; it'll switch to a crates.io install once v0.1.0 is published. Re-run the `cargo install --force ... mdbook-listings` command to pull the latest main; the preprocessor refreshes its bundled CSS/JS on every build, so no separate reinstall step is needed.
 
 ### Fonts (optional, eliminates PDF build warnings)
 
