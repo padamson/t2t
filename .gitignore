@@ -1,8 +1,8 @@
 # Build output
 build/
 
-# Rust build artifacts for local tools
-book/tools/*/target/
+# Rust build artifacts (any Cargo project at any depth)
+target/
 
 # mdbook-quiz writes assets into src/quiz/ on every build,
 # which triggers mdbook serve rebuild loops

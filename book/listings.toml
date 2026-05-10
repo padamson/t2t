@@ -5,3 +5,15 @@ tag = "compose-yaml-ch02-phase1"
 source = "../compose.yaml"
 frozen = "src/listings/compose-yaml-ch02-phase1.yaml"
 sha256 = "a11a015fcfd2d1defedc80e628232d7b6df734346408d4441f177620a662ec17"
+
+[[listing]]
+tag = "main-rs-ch02-phase2"
+source = "../app/src/main.rs"
+frozen = "src/listings/main-rs-ch02-phase2.rs"
+sha256 = "da1a5d673a35a02e1f49f7edf1d5d3bdae5693d8de72435843ea436a89fcec01"
+
+[[listing]]
+tag = "cargo-toml-ch02-phase2"
+source = "../app/Cargo.toml"
+frozen = "src/listings/cargo-toml-ch02-phase2.toml"
+sha256 = "35744588b8469b9ee09778606c182c1f649d7f982f10f6a5191edfd1aa9dfaef"

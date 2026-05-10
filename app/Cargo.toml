@@ -1,0 +1,27 @@
+[package]
+name = "scimantic-server"
+version = "0.1.0"
+edition = "2024"
+# CALLOUT: msrv-pin Pin the minimum supported Rust version. Builds on older toolchains fail with a clear error rather than a confusing compile error deep in a dependency. CI's MSRV job (added in Phase 4) compiles with exactly this version to catch accidental use of newer features.
+rust-version = "1.95"
+license = "MIT"
+description = "Scimantic — scientific knowledge management web application"
+repository = "https://github.com/padamson/t2t"
+authors = ["Paul Adamson"]
+# CALLOUT: publish-false `publish = false` blocks accidental `cargo publish` to crates.io. The web app is deployed to AWS, not distributed as a crate. The `scimantic` CLI is a separate crate that *does* publish.
+publish = false
+
+[dependencies]
+axum = "0.8"
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+# CALLOUT: tracing-features `env-filter` reads the `RUST_LOG` environment variable to control log levels at runtime. `json` enables structured JSON output, which we'll switch to in production for log aggregators that parse JSON, not free-text.
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# CALLOUT: lints-table The `[lints]` table sets project-wide lint policy. `unsafe_code = "forbid"` makes `unsafe` blocks a hard error (we don't need any in a web app). `clippy::all` and `clippy::pedantic` opt in to clippy's full warning set; we'll silence individual lints in source files when justified, never project-wide.
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }

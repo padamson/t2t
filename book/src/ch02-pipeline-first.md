@@ -120,7 +120,7 @@ Create `compose.yaml` in the repository root:
 {{#include listings/compose-yaml-ch02-phase1.yaml}}
 ```
 
-A few choices in this file are worth pausing on. Click any badge inline with the code above to read why we made that choice — `postgres:16` over `latest`, the explicit healthcheck, and the named `pgdata` volume.
+A few choices in this file are worth pausing on. Hover over any badge inline with the code above to read why we made that choice — `postgres:16` over `latest`, the explicit healthcheck, and the named `pgdata` volume.
 
 ```admonish warning
 The username and password (`scimantic`/`scimantic`) are for local development only. Production credentials are managed through environment variables and AWS Secrets Manager, never committed to the repository. We'll set that up in Phase 5.
@@ -184,49 +184,159 @@ No code yet, just a reproducible environment where every reader starts from the 
 
 Next, we write our first Rust code: a health-check endpoint that proves the server can start.
 
-<!-- ============================================================ -->
-<!-- PHASE 2: Hello-World Endpoint + Build -->
-<!-- ============================================================ -->
+## Phase 2: Hello-World Endpoint + Build
 
-<!-- The reader builds: -->
-<!-- - Bare Axum health-check endpoint (/health returns "ok") -->
-<!-- - cargo-leptos project structure (server binary + WASM client) -->
-<!-- - Structured logging with tracing on the health-check handler -->
+PostgreSQL is running. The toolchain is installed. Now we write the smallest possible Rust web server: a single endpoint at `/health` that returns the literal string `ok`. By the end of this phase you'll be running `cargo run`, hitting `localhost:3000/health` from another terminal, and seeing both `ok` and a structured log line.
 
-<!-- The reader learns: -->
-<!-- - Axum basics: async fn handlers, Router, Tokio runtime -->
-<!-- - async/await fundamentals: why web servers need async, what .await means -->
-<!-- - Structured logging with tracing: spans, events, tracing-subscriber -->
-<!--   - Human-readable output for development, JSON output for production -->
-<!--   - Why structured logging matters: log aggregation tools parse JSON, not free-text -->
-<!-- - cargo-leptos: dual-target compilation (server binary + WASM client), hot reloading -->
+This is deliberately tiny. The point is not what it does — it does almost nothing. The point is what's in place: a Cargo crate with pinned MSRV, an Axum router, a Tokio runtime, structured logging via `tracing`, and a working build. Every later chapter adds to this skeleton.
 
-<!-- Checkpoint: `cargo leptos serve`, `curl localhost:3000/health` returns "ok" with a log line -->
-<!-- Greenfield checklist items checked off: -->
-<!--   - cargo leptos build compiles, tests, and packages with a single command -->
-<!--   - Structured logging with tracing from the first handler -->
+```admonish info title="Why bare Axum, not cargo-leptos?"
+The Leptos team ships a `cargo leptos new` command that scaffolds an entire dual-target (server binary + WASM client) project in one shot. We don't use it yet. There's nothing for the WASM client to do until [The Web Frontend](./ch04-the-web-frontend.md), and scaffolding a UI we won't touch for two chapters obscures the small thing we *are* doing here.
+
+Chapter 4 introduces `cargo-leptos` at the moment of need, when the first Leptos component lands. The conversion is small: add `leptos`/`leptos_axum`/`leptos_meta` dependencies, add `ssr`/`hydrate` features, add the App component. By that point you've already used Axum directly and the dual-target build has a reason to exist.
+```
+
+### Create the App Crate
+
+From the repository root, create the `app/` directory with a single Cargo crate inside:
+
+```bash
+mkdir -p app/src
+```
+
+The `app/` directory is a peer of `book/`, `infra/`, and `schema/`. The repository itself is a monorepo, not a Cargo workspace — `app/`, `book/tools/mdbook-quiz-pdf/`, and any other Cargo crates live as independent projects that happen to share a git repo. (Chapter 3 converts `app/` itself into a Cargo workspace when the trait-based service layer makes the split worthwhile. For now, `app/` is one crate.)
+
+### `app/Cargo.toml`
+
+```toml
+{{#include listings/cargo-toml-ch02-phase2.toml}}
+```
+
+A few things in this file are worth pausing on. Hover over any badge above to see why we made that choice.
+
+- The crate is named **`scimantic-server`**, not `scimantic`. The unsuffixed `scimantic` name on crates.io belongs to the [Scimantic CLI](https://crates.io/crates/scimantic) you installed in Phase 1; this crate is a different artifact (a deployable web server). The `-server` suffix sets up the workspace-split naming for Chapter 3, where we'll add `scimantic-core` for trait definitions.
+- **`edition = "2024"`** uses the latest Rust edition. Edition 2024 stabilizes async closures, `let-else`, and many small ergonomics improvements we'll use later.
+- **`publish = false`** is a guard against accidental `cargo publish`. The web app deploys to AWS, not crates.io.
+- The dependency set is minimal: Axum (HTTP server), Tokio (async runtime), and `tracing` plus `tracing-subscriber` (structured logging). We add more dependencies as each chapter needs them.
+
+### `app/src/main.rs`
+
+```rust
+{{#include listings/main-rs-ch02-phase2.rs}}
+```
+
+The whole server is about thirty lines. The callouts walk through the moving parts: how `#[tokio::main]` boots the async runtime, how Axum's router maps a path to a handler, how `#[tracing::instrument]` attaches every log line in `health()` to a per-request span, and why we read the port from an environment variable.
+
+```admonish tip title="Why PORT from the environment?"
+Every cloud platform — AWS App Runner, Fly.io, Heroku, Cloud Run — sets a `PORT` environment variable on the container telling the app which port to bind. Hard-coding `3000` works locally; reading `PORT` works locally *and* in production. The default of `3000` matches the cargo-leptos convention we'll adopt in Ch 4, so when the time comes the local URL doesn't change.
+```
+
+### `.gitignore`: ignore the `target/` directory
+
+Cargo writes build artifacts to a `target/` directory beside the `Cargo.toml`. In t2t the file already ignores `build/` (mdbook output) and a few other things. Add Rust build artifacts to the rule:
+
+```
+target/
+```
+
+The bare `target/` (no path prefix) matches at any depth — `app/target/`, `book/tools/mdbook-quiz-pdf/target/`, and any future Cargo crate's build directory. One rule, all crates covered.
+
+### Run It
+
+From `app/`:
+
+```bash
+cargo run
+```
+
+The first build pulls Axum, Tokio, and `tracing` from crates.io and compiles them; subsequent runs are quick. Once you see `scimantic-server starting`, leave it running and from another terminal:
+
+```bash
+curl http://localhost:3000/health
+# ok
+```
+
+Watch the server terminal: you should see a `health: health check` log line. The `health:` prefix is the span name from `#[tracing::instrument]`; everything inside that handler now reports under that span, which is what makes a structured-logging system useful when you're staring at a thousand requests at once.
+
+```admonish warning title="Port 3000 conflicts with mdbook serve"
+If you have `mdbook serve` running for the book, it's holding port 3000. Either stop it, run `mdbook serve --port 4000` to move it aside, or run the server on a different port: `PORT=4000 cargo run` and curl `localhost:4000/health` instead.
+```
+
+Stop the server with Ctrl-C.
+
+### Phase 2 Checkpoint
+
+You now have:
+
+- **A Cargo crate at `app/`** named `scimantic-server`, with MSRV 1.95, the Axum + Tokio + `tracing` dependency set, project-wide lints turned on, and `publish = false` blocking accidental release.
+- **A working Axum server** with a `/health` endpoint that returns `ok`.
+- **Structured logging via `tracing`** showing both startup info and per-request spans.
+- **`target/` gitignored** so build artifacts don't pollute the repo.
+
+Greenfield checklist items completed:
+
+- [x] First Rust crate (`scimantic-server`) created at `app/`, MSRV pinned *(done)*
+- [x] Axum server builds and runs locally *(done)*
+- [x] Structured logging with `tracing` from the first handler *(done)*
+
+What we deliberately *haven't* done yet — saved for the right chapter:
+
+- **CI workflow.** Phase 4 wires `app/` into GitHub Actions alongside the security and supply-chain checks.
+- **Pre-commit hooks.** Same — Phase 4.
+- **`cargo-leptos` and a UI.** Chapter 4.
+- **Workspace structure.** Chapter 3, when the service layer trait-ports earn the split.
+
+Next: author the local LinkML schema for `User`, declare it in `panschema.toml`, and run `panschema fetch && panschema generate` to produce the Rust types you'll consume in Chapter 3.
 
 <!-- ============================================================ -->
 <!-- PHASE 3: Schema Foundation -->
 <!-- ============================================================ -->
 
 <!-- The reader builds: -->
-<!-- - Initial LinkML schema for Question and QuestionStatus -->
-<!-- - panschema generating Rust types, SQL DDL, and SHACL shapes from the schema -->
-<!-- - Generated types compile and are used by the health-check handler -->
-<!-- - scimantic-ontology repo set up as a versioned dependency -->
+<!-- - app/schema/scimantic-server.yaml — a tiny LOCAL LinkML schema with a single User class -->
+<!--   (id: uri identifier, email: string required). This is the app-state schema, NOT the -->
+<!--   scientific ontology — that comes from scimantic-schema in Ch 3 via panschema's schema-manager. -->
+<!-- - panschema CLI installed (cargo install panschema) -->
+<!-- - app/panschema.toml — first manifest, with a single [schemas] entry (path: source) for the -->
+<!--   local schema. Reader's first contact with the manifest format. -->
+<!-- - app/panschema.lock — first lockfile, generated by `panschema fetch`. Records the local -->
+<!--   schema's checksum (so `verify` can detect "edited but not regenerated"). -->
+<!-- - `panschema fetch && panschema generate` runs end-to-end and produces Rust types into -->
+<!--   app/src/generated/scimantic_server.rs (or wherever the [generate.<schema>] block points). -->
+<!-- - Generated types compile (not yet wired into a handler — that's Ch 3's database work) -->
 
 <!-- The reader learns: -->
-<!-- - LinkML basics: classes, attributes, enums, relationships in YAML -->
-<!-- - RDF/ontology basics: why knowledge graphs use URIs, triples, and SHACL shapes -->
-<!-- - panschema basics: install CLI, run `panschema generate`, read the generated code -->
-<!-- - The generated code is idiomatic Rust, not opaque output -->
-<!-- - Schema-driven development: the pipeline will regenerate and verify on every push -->
-<!-- - Ontology as an architecture artifact: versioned in a separate repo, consumed by the app -->
+<!-- - LinkML basics by AUTHORING: classes, attributes, range types (string, uri, integer) in YAML. -->
+<!-- - panschema as a schema package manager (cargo for LinkML): manifest + lockfile + fetch + -->
+<!--   generate. Same conceptual model as cargo. v0.1 of the workflow uses just one schema with a -->
+<!--   `path:` source — minimum complexity to demonstrate the full workflow. -->
+<!-- - The manifest pattern (`panschema.toml`) and the [generate.<schema>] output mapping. -->
+<!-- - Why a lockfile even with a local schema: `panschema verify` catches "edited the schema but -->
+<!--   forgot to regenerate" — a common mistake. -->
+<!-- - The generated code is idiomatic Rust, not opaque output. -->
+<!-- - Schema-driven development as a workflow: edit YAML, run `panschema generate`, types update. -->
+<!-- - The two-schema architecture is INTRODUCED but only the LOCAL schema is exercised. -->
+<!--   Mention scimantic-schema as the canonical scientific ontology that Ch 3 will add as a -->
+<!--   second [schemas] entry with the github: source protocol. The reader knows the manifest -->
+<!--   pattern by then; Ch 3 just adds one new line and one new source protocol. -->
+<!-- - Why the split matters: scientific ontology is a separate workstream with its own design -->
+<!--   discipline (BFO/CCO grounding, PROV alignment) — t2t consumes it as a versioned artifact. -->
+<!--   App-state schema lives with the app because its design is product-driven, not domain-driven. -->
 
-<!-- Checkpoint: `cargo build` passes with generated types from the schema -->
+<!-- Checkpoint: `panschema fetch && panschema generate && cargo build` succeeds with the User -->
+<!-- type generated from the local schema -->
 <!-- Greenfield checklist items checked off: -->
-<!--   - LinkML schema is versioned; panschema generates types, migrations, and SHACL shapes in CI -->
+<!--   - Local LinkML schema (scimantic-server.yaml) authored -->
+<!--   - panschema.toml manifest authored; panschema.lock generated -->
+<!--   - panschema CLI installed and runs locally (CI integration in Phase 4) -->
+
+<!-- DEFERRED to Ch 3 (because it lands with the database work it serves): -->
+<!-- - SHACL shapes generation (those load into Oxigraph at runtime; no Oxigraph yet in Ch 2) -->
+<!-- - SQL DDL generation (no PostgreSQL yet; Ch 3 wires it) -->
+<!-- - scimantic-schema added as a second [schemas] entry with github: source -->
+<!-- - The github: source protocol exercised end-to-end (fetch from a tagged release, lockfile -->
+<!--   gains a checksum + revision entry) -->
+<!-- - Hexagonal architecture callout (where the trait-based service layer earns its split) -->
 
 <!-- ============================================================ -->
 <!-- PHASE 4: CI Pipeline -->

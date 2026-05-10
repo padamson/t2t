@@ -54,6 +54,10 @@ jobs:
           cargo install --git https://github.com/padamson/mdbook-admonish --branch feat/mdbook-0.5-compat --force
           mdbook-admonish install
 
+      - name: Install mdbook-listings (tracks main until v0.1.0 ships to crates.io)
+        run: |
+          cargo install --git https://github.com/padamson/mdbook-listings --branch main --force mdbook-listings
+
       - name: Install mdbook-quiz (requires pnpm for JS assets)
         working-directory: .
         run: |
